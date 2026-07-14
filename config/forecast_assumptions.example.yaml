@@ -1,0 +1,37 @@
+forecast_years: [2025, 2026, 2027, 2028, 2029]
+
+operating:
+  revenue_growth: {2025: 0.05, 2026: 0.05, 2027: 0.04, 2028: 0.04, 2029: 0.03}
+  cogs_as_pct_revenue: 0.60
+  sga_as_pct_revenue: 0.15
+  rd_as_pct_revenue: 0.02
+  other_operating_income_as_pct_revenue: 0.00
+  tax_rate: 0.25
+  dividend_payout_ratio: 0.30
+
+working_capital:
+  days_sales_outstanding: 36.5
+  days_inventory_outstanding: 46.35
+  days_payables_outstanding: 40.56
+  other_current_assets_as_pct_revenue: 0.02
+  accrued_liabilities_as_pct_revenue: 0.03
+
+fixed_assets:
+  capex_as_pct_revenue: 0.08
+  depreciation_as_pct_beginning_ppe: 0.10
+  useful_life: 10.0
+  residual_value_rate: 0.05
+  asset_disposals: 0.0
+
+debt:
+  short_term_interest_rate: 0.05
+  long_term_interest_rate: 0.055
+  minimum_cash_as_pct_revenue: 0.05
+  new_borrowing: 0.0
+  debt_repayment: 10.0
+  share_issuance: 0.0
+  share_repurchases: 0.0
+
+solver:
+  max_iterations: 50
+  tolerance: 0.00000001

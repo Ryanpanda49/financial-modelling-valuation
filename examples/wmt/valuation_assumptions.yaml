@@ -1,0 +1,73 @@
+# Illustrative researcher inputs as of 2026-07-14; not live market data or investment advice.
+# Debt, cash, and diluted shares are overwritten by standardized FY2026 SEC history at runtime.
+risk_free_rate: 0.0425
+equity_risk_premium: 0.0500
+beta: 0.60
+pre_tax_cost_of_debt: 0.0550
+target_debt_weight: 0.15
+target_equity_weight: 0.85
+terminal_growth_rate: 0.0250
+exit_multiple: 12.0
+debt: 0.0
+preferred_stock: 0.0
+minority_interest: 6270.0
+cash: 0.0
+non_operating_investments: 0.0
+diluted_shares: 1.0
+
+metadata:
+  valuation_date: "2026-07-14"
+  scenario_name: "Illustrative WMT base case"
+  is_illustrative: true
+  warnings:
+    - "Inputs demonstrate model mechanics and are not current investment-research conclusions."
+    - "Refresh every market input and its source before relying on valuation output."
+  sources:
+    risk_free_rate:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Placeholder long-duration U.S. risk-free rate for reproducible testing."
+    equity_risk_premium:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Placeholder U.S. equity risk premium for reproducible testing."
+    beta:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Placeholder beta; methodology, observation window, and relevering require review."
+    pre_tax_cost_of_debt:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Placeholder borrowing cost; debt maturity and credit spread require review."
+    target_debt_weight:
+      source_name: "Illustrative analyst capital structure"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Researcher-selected target weight, not a live market-capitalization calculation."
+    target_equity_weight:
+      source_name: "Illustrative analyst capital structure"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Complement to the illustrative target debt weight."
+    terminal_growth_rate:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Long-run nominal growth assumption requiring macroeconomic support."
+    exit_multiple:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Cross-check assumption; no automated comparable-company selection is used."

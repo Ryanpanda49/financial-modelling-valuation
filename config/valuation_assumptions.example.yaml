@@ -1,0 +1,46 @@
+risk_free_rate: 0.04
+equity_risk_premium: 0.055
+beta: 0.90
+pre_tax_cost_of_debt: 0.05
+target_debt_weight: 0.20
+target_equity_weight: 0.80
+terminal_growth_rate: 0.025
+exit_multiple: 10.0
+debt: 200.0
+preferred_stock: 0.0
+minority_interest: 0.0
+cash: 100.0
+non_operating_investments: 0.0
+diluted_shares: 100.0
+
+metadata:
+  valuation_date: "2025-01-01"
+  scenario_name: "Illustrative example"
+  is_illustrative: true
+  warnings:
+    - "Replace example values, dates, sources, and rationales before live research."
+  sources:
+    risk_free_rate:
+      source_name: "Example placeholder"
+      source_url:
+      as_of_date: "2025-01-01"
+      accessed_date: "2025-01-01"
+      rationale: "Replace with a dated maturity-matched government yield source."
+    equity_risk_premium:
+      source_name: "Example placeholder"
+      source_url:
+      as_of_date: "2025-01-01"
+      accessed_date: "2025-01-01"
+      rationale: "Replace with a documented implied or historical ERP methodology."
+    beta:
+      source_name: "Example placeholder"
+      source_url:
+      as_of_date: "2025-01-01"
+      accessed_date: "2025-01-01"
+      rationale: "Document raw beta, observation window, frequency, and relevering method."
+    pre_tax_cost_of_debt:
+      source_name: "Example placeholder"
+      source_url:
+      as_of_date: "2025-01-01"
+      accessed_date: "2025-01-01"
+      rationale: "Document bond yield, synthetic rating, or risk-free-plus-spread method."

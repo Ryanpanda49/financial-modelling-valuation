@@ -1,0 +1,16 @@
+sec:
+  # Replace this placeholder before making live SEC requests.
+  user_agent: "Your Name your.email@example.com"
+  timeout_seconds: 30
+  max_retries: 3
+  requests_per_second: 5.0
+  cache_enabled: true
+  cache_directory: "data/cache/sec"
+  cache_ttl_seconds: 86400
+
+model:
+  currency: "USD"
+  scale: "millions"
+  historical_years: 5
+  forecast_years: 5
+  absolute_tolerance: 0.000001

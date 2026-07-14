@@ -1,0 +1,138 @@
+version: 2
+
+# Canonical names are stable public API. Tag priority is deterministic; later tags are fallbacks.
+# Expenses and cash outflows are normalized to positive magnitudes by the mapping layer.
+accounts:
+  # Income statement
+  revenue:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: true, unit_type: currency, description: Revenue from ordinary activities., accepted_tags: [{tag: RevenueFromContractWithCustomerExcludingAssessedTax, priority: 10}, {tag: SalesRevenueNet, priority: 20}, {tag: Revenues, priority: 30}, {tag: NetSales, priority: 40}]}
+  cogs:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: true, unit_type: currency, description: Cost of goods or services sold., accepted_tags: [{tag: CostOfRevenue, priority: 10}, {tag: CostOfGoodsAndServicesSold, priority: 20}, {tag: CostOfGoodsSold, priority: 30}]}
+  gross_profit:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Revenue less cost of sales., derivation: revenue - cogs, accepted_tags: [{tag: GrossProfit, priority: 10}]}
+  selling_general_admin:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Selling general and administrative expense., accepted_tags: [{tag: SellingGeneralAndAdministrativeExpense, priority: 10}, {tag: GeneralAndAdministrativeExpense, priority: 20}]}
+  research_and_development:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Research and development expense., accepted_tags: [{tag: ResearchAndDevelopmentExpense, priority: 10}]}
+  depreciation_and_amortization:
+    {statements: [income_statement, cash_flow_statement], fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Depreciation and amortization expense., accepted_tags: [{tag: DepreciationAndAmortization, priority: 10}, {tag: DepreciationDepletionAndAmortization, priority: 20}, {tag: DepreciationAmortizationAndAccretionNet, priority: 30}, {tag: DepreciationDepletionAndAmortizationPropertyPlantAndEquipment, priority: 40}, {tag: Depreciation, priority: 50}]}
+  operating_income:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: true, unit_type: currency, description: Income from operations., accepted_tags: [{tag: OperatingIncomeLoss, priority: 10}]}
+  interest_expense:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Gross interest expense., accepted_tags: [{tag: InterestExpenseNonOperating, priority: 10}, {tag: InterestAndDebtExpense, priority: 20}, {tag: InterestExpenseDebt, priority: 30}, {tag: InterestExpense, priority: 40}]}
+  interest_income:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Interest income., accepted_tags: [{tag: InterestIncomeExpenseNonoperatingNet, priority: 10}, {tag: InterestIncomeNonoperating, priority: 20}]}
+  income_before_tax:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: true, unit_type: currency, description: Income before income taxes., accepted_tags: [{tag: IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest, priority: 10}, {tag: IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments, priority: 20}]}
+  income_tax:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: true, unit_type: currency, description: Income tax expense or benefit., accepted_tags: [{tag: IncomeTaxExpenseBenefit, priority: 10}]}
+  net_income:
+    {statements: [income_statement, cash_flow_statement], fact_kind: duration, sign: positive, required: true, unit_type: currency, description: Consolidated net income., accepted_tags: [{tag: NetIncomeLoss, priority: 10}, {tag: ProfitLoss, priority: 20}]}
+  minority_interest:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Net income attributable to noncontrolling interests., accepted_tags: [{tag: NetIncomeLossAttributableToNoncontrollingInterest, priority: 10}]}
+  net_income_attributable_to_parent:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: true, unit_type: currency, description: Net income attributable to parent shareholders., derivation: net_income - minority_interest, zero_if_missing: [minority_interest], accepted_tags: [{tag: NetIncomeLossAvailableToCommonStockholdersBasic, priority: 10}, {tag: NetIncomeLossAttributableToParent, priority: 20}]}
+  diluted_eps:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: false, unit_type: per_share, description: Diluted earnings per share., accepted_tags: [{tag: EarningsPerShareDiluted, priority: 10}]}
+  diluted_shares:
+    {statement: income_statement, fact_kind: duration, sign: positive, required: true, unit_type: shares, description: Weighted average diluted shares outstanding., accepted_tags: [{tag: WeightedAverageNumberOfDilutedSharesOutstanding, priority: 10}]}
+
+  # Balance sheet
+  cash_and_equivalents:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Cash, cash equivalents, and restricted cash when reported as the CFS reconciliation basis., accepted_tags: [{tag: CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents, priority: 10}, {tag: CashAndCashEquivalentsAtCarryingValue, priority: 20}]}
+  short_term_investments:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Current marketable securities and short-term investments., accepted_tags: [{tag: ShortTermInvestments, priority: 10}, {tag: MarketableSecuritiesCurrent, priority: 20}]}
+  accounts_receivable:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Accounts receivable net., accepted_tags: [{tag: AccountsReceivableNetCurrent, priority: 10}, {tag: ReceivablesNetCurrent, priority: 20}, {tag: AccountsReceivableNet, priority: 30}, {tag: AccountsNotesAndLoansReceivableNetCurrent, priority: 40}]}
+  inventory:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Inventory net., accepted_tags: [{tag: InventoryNet, priority: 10}]}
+  other_current_assets:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Other current assets., accepted_tags: [{tag: OtherCurrentAssets, priority: 10}, {tag: PrepaidExpenseAndOtherAssetsCurrent, priority: 20}, {tag: OtherCurrentAssetsPrepaidExpenseAndOtherCurrentAssets, priority: 30}, {tag: PrepaidExpenseCurrent, priority: 40}]}
+  total_current_assets:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Total current assets., accepted_tags: [{tag: AssetsCurrent, priority: 10}]}
+  property_plant_equipment:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Property plant and equipment net., accepted_tags: [{tag: PropertyPlantAndEquipmentNet, priority: 10}]}
+  goodwill:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Goodwill., accepted_tags: [{tag: Goodwill, priority: 10}]}
+  intangible_assets:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Finite and indefinite lived intangible assets net., accepted_tags: [{tag: FiniteLivedIntangibleAssetsNet, priority: 10}, {tag: IndefiniteLivedIntangibleAssetsExcludingGoodwill, priority: 20}, {tag: IntangibleAssetsNetExcludingGoodwill, priority: 30}]}
+  other_noncurrent_assets:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Other noncurrent assets., accepted_tags: [{tag: OtherAssetsNoncurrent, priority: 10}]}
+  total_assets:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Total assets., accepted_tags: [{tag: Assets, priority: 10}]}
+  accounts_payable:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Accounts payable., accepted_tags: [{tag: AccountsPayableCurrent, priority: 10}, {tag: AccountsPayableAndAccruedLiabilitiesCurrent, priority: 20}]}
+  accrued_liabilities:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Accrued liabilities current., accepted_tags: [{tag: AccruedLiabilitiesCurrent, priority: 10}, {tag: EmployeeRelatedLiabilitiesCurrent, priority: 20}]}
+  short_term_debt:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Short-term borrowings and current debt., accepted_tags: [{tag: ShortTermBorrowings, priority: 10}, {tag: LongTermDebtCurrent, priority: 20}, {tag: ShortTermBorrowingsAndCurrentMaturitiesOfLongTermDebt, priority: 30}]}
+  current_lease_liabilities:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Current operating and finance lease liabilities., accepted_tags: [{tag: OperatingLeaseLiabilityCurrent, priority: 10}, {tag: FinanceLeaseLiabilityCurrent, priority: 20}]}
+  other_current_liabilities:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Other current liabilities., accepted_tags: [{tag: OtherLiabilitiesCurrent, priority: 10}]}
+  total_current_liabilities:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Total current liabilities., accepted_tags: [{tag: LiabilitiesCurrent, priority: 10}]}
+  long_term_debt:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Long-term debt excluding current portion., accepted_tags: [{tag: LongTermDebtNoncurrent, priority: 10}, {tag: LongTermDebt, priority: 20}]}
+  noncurrent_lease_liabilities:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Noncurrent operating and finance lease liabilities., accepted_tags: [{tag: OperatingLeaseLiabilityNoncurrent, priority: 10}, {tag: FinanceLeaseLiabilityNoncurrent, priority: 20}]}
+  deferred_tax_liabilities:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Deferred tax liabilities noncurrent., accepted_tags: [{tag: DeferredTaxLiabilitiesNoncurrent, priority: 10}]}
+  other_noncurrent_liabilities:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Other noncurrent liabilities., accepted_tags: [{tag: OtherLiabilitiesNoncurrent, priority: 10}]}
+  total_liabilities:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Total liabilities., derivation: total_assets - total_equity, accepted_tags: [{tag: Liabilities, priority: 10}]}
+  common_stock:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Common stock par or stated value., accepted_tags: [{tag: CommonStocksIncludingAdditionalPaidInCapital, priority: 10}, {tag: CommonStockValue, priority: 20}]}
+  additional_paid_in_capital:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Additional paid-in capital., accepted_tags: [{tag: AdditionalPaidInCapital, priority: 10}]}
+  retained_earnings:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Retained earnings or accumulated deficit., accepted_tags: [{tag: RetainedEarningsAccumulatedDeficit, priority: 10}]}
+  accumulated_other_comprehensive_income:
+    {statement: balance_sheet, fact_kind: instant, sign: source, required: false, unit_type: currency, description: Accumulated other comprehensive income or loss., accepted_tags: [{tag: AccumulatedOtherComprehensiveIncomeLossNetOfTax, priority: 10}]}
+  treasury_stock:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Treasury stock as a positive contra-equity magnitude., accepted_tags: [{tag: TreasuryStockValue, priority: 10}]}
+  minority_interest_balance:
+    {canonical_name: minority_interest, statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Noncontrolling interest in consolidated equity., accepted_tags: [{tag: MinorityInterest, priority: 10}, {tag: NoncontrollingInterestInConsolidatedEntity, priority: 20}]}
+  total_equity:
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Total equity including noncontrolling interests where reported., accepted_tags: [{tag: StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest, priority: 10}, {tag: StockholdersEquity, priority: 20}]}
+
+  # Cash flow statement
+  stock_based_compensation:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Stock-based compensation expense., accepted_tags: [{tag: ShareBasedCompensation, priority: 10}, {tag: StockBasedCompensation, priority: 20}]}
+  deferred_taxes:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: false, unit_type: currency, description: Deferred income tax adjustment., accepted_tags: [{tag: DeferredIncomeTaxExpenseBenefit, priority: 10}]}
+  change_in_accounts_receivable:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: false, unit_type: currency, description: Cash-flow effect of change in accounts receivable., accepted_tags: [{tag: IncreaseDecreaseInAccountsReceivable, priority: 10}]}
+  change_in_inventory:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: false, unit_type: currency, description: Cash-flow effect of change in inventory., accepted_tags: [{tag: IncreaseDecreaseInInventories, priority: 10}]}
+  change_in_accounts_payable:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: false, unit_type: currency, description: Cash-flow effect of change in accounts payable., accepted_tags: [{tag: IncreaseDecreaseInAccountsPayable, priority: 10}]}
+  change_in_other_working_capital:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: false, unit_type: currency, description: Cash-flow effect of other operating working-capital changes., accepted_tags: [{tag: IncreaseDecreaseInOperatingAssets, priority: 10}, {tag: IncreaseDecreaseInOperatingLiabilities, priority: 20}]}
+  cash_from_operations:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: true, unit_type: currency, description: Net cash provided by operating activities., accepted_tags: [{tag: NetCashProvidedByUsedInOperatingActivities, priority: 10}]}
+  capital_expenditures:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: true, unit_type: currency, description: Cash purchases of property plant and equipment., accepted_tags: [{tag: PaymentsToAcquirePropertyPlantAndEquipment, priority: 10}]}
+  acquisitions:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Cash paid for acquisitions net of cash acquired., accepted_tags: [{tag: PaymentsToAcquireBusinessesNetOfCashAcquired, priority: 10}, {tag: PaymentsToAcquireBusinessesGross, priority: 20}]}
+  asset_disposals:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Proceeds from disposal of property plant and equipment., accepted_tags: [{tag: ProceedsFromSaleOfPropertyPlantAndEquipment, priority: 10}]}
+  cash_from_investing:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: true, unit_type: currency, description: Net cash provided by or used in investing activities., accepted_tags: [{tag: NetCashProvidedByUsedInInvestingActivities, priority: 10}]}
+  debt_issuance:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Proceeds from debt issuance and borrowings., accepted_tags: [{tag: ProceedsFromIssuanceOfLongTermDebt, priority: 10}, {tag: ProceedsFromIssuanceOfDebt, priority: 20}, {tag: ProceedsFromShortTermDebt, priority: 30}]}
+  debt_repayment:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Repayment of debt principal., accepted_tags: [{tag: RepaymentsOfLongTermDebt, priority: 10}, {tag: RepaymentsOfDebt, priority: 20}, {tag: RepaymentsOfShortTermDebt, priority: 30}]}
+  share_issuance:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Proceeds from common share issuance., accepted_tags: [{tag: ProceedsFromStockOptionsExercised, priority: 10}, {tag: ProceedsFromIssuanceOfCommonStock, priority: 20}]}
+  share_repurchases:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Payments to repurchase common stock., accepted_tags: [{tag: PaymentsForRepurchaseOfCommonStock, priority: 10}]}
+  dividends_paid:
+    {statement: cash_flow_statement, fact_kind: duration, sign: positive, required: false, unit_type: currency, description: Cash dividends paid., accepted_tags: [{tag: PaymentsOfDividends, priority: 10}, {tag: PaymentsOfDividendsCommonStock, priority: 20}]}
+  cash_from_financing:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: true, unit_type: currency, description: Net cash provided by or used in financing activities., accepted_tags: [{tag: NetCashProvidedByUsedInFinancingActivities, priority: 10}]}
+  fx_effect:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: false, unit_type: currency, description: Exchange-rate effect on cash., accepted_tags: [{tag: EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents, priority: 10}, {tag: EffectOfExchangeRateOnCashAndCashEquivalents, priority: 20}]}
+  net_change_in_cash:
+    {statement: cash_flow_statement, fact_kind: duration, sign: source, required: true, unit_type: currency, description: Net change in cash and restricted cash., accepted_tags: [{tag: CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect, priority: 10}, {tag: CashAndCashEquivalentsPeriodIncreaseDecrease, priority: 20}]}

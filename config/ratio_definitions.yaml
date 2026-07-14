@@ -1,0 +1,9 @@
+version: 1
+ratios:
+  current_ratio:
+    numerator: total_current_assets
+    denominator: total_current_liabilities
+    unit: x
+    applicability: non_financial
+    zero_denominator: warn_and_null
+    description: Current assets divided by current liabilities.

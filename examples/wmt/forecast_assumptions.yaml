@@ -1,0 +1,41 @@
+# Researcher-editable draft generated 2026-07-14 from WMT FY2022-FY2026 SEC history.
+# These are illustrative assumptions, not company guidance or investment advice.
+forecast_years: [2027, 2028, 2029, 2030, 2031]
+
+operating:
+  revenue_growth: {2027: 0.040, 2028: 0.038, 2029: 0.035, 2030: 0.032, 2031: 0.030}
+  cogs_as_pct_revenue: {2027: 0.758, 2028: 0.757, 2029: 0.756, 2030: 0.755, 2031: 0.755}
+  # Cash SG&A excluding D&A; reported SG&A contains embedded D&A and is normalized here.
+  sga_as_pct_revenue: {2027: 0.189, 2028: 0.188, 2029: 0.187, 2030: 0.186, 2031: 0.186}
+  rd_as_pct_revenue: 0.000
+  # Explicit top-down proxy for membership and other operating income.
+  other_operating_income_as_pct_revenue: {2027: 0.0095, 2028: 0.0095, 2029: 0.0093, 2030: 0.0092, 2031: 0.0090}
+  tax_rate: 0.250
+  dividend_payout_ratio: 0.350
+
+working_capital:
+  days_sales_outstanding: 5.8
+  days_inventory_outstanding: 40.0
+  days_payables_outstanding: 43.0
+  other_current_assets_as_pct_revenue: 0.006
+  accrued_liabilities_as_pct_revenue: 0.044
+
+fixed_assets:
+  capex_as_pct_revenue: {2027: 0.036, 2028: 0.035, 2029: 0.034, 2030: 0.033, 2031: 0.032}
+  depreciation_as_pct_beginning_ppe: 0.118
+  useful_life: 10.0
+  residual_value_rate: 0.05
+  asset_disposals: 0.0
+
+debt:
+  short_term_interest_rate: 0.060
+  long_term_interest_rate: 0.058
+  minimum_cash_as_pct_revenue: 0.015
+  new_borrowing: 0.0
+  debt_repayment: 500.0
+  share_issuance: 0.0
+  share_repurchases: 3000.0
+
+solver:
+  max_iterations: 50
+  tolerance: 0.00000001

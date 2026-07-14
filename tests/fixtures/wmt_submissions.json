@@ -1,0 +1,11 @@
+{
+  "cik": "0000104169",
+  "entityType": "operating",
+  "sic": "5331",
+  "sicDescription": "Retail-Variety Stores",
+  "name": "Walmart Inc.",
+  "tickers": ["WMT"],
+  "exchanges": ["NYSE"],
+  "fiscalYearEnd": "0131",
+  "filings": {"recent": {"accessionNumber": [], "filingDate": [], "reportDate": [], "form": []}}
+}

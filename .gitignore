@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+~$*
+
+# Local configuration and secrets
+.env
+.env.*
+!/.env.example
+config/model_config.yaml
+
+# Reference materials: internal only, never publish
+/通裕重工-中信证券A股标准估值模型20231023.xlsx
+/Financial Modelling and Valuation.pdf
+/reference_materials/
+
+# Runtime data and generated outputs
+/data/raw/
+/data/interim/
+/data/processed/
+/data/cache/
+/outputs/*
+!/outputs/.gitkeep

@@ -1,0 +1,40 @@
+# Researcher-editable draft based on AAPL FY2021-FY2025 SEC history.
+# These are illustrative assumptions, not company guidance or investment advice.
+forecast_years: [2026, 2027, 2028, 2029, 2030]
+
+operating:
+  revenue_growth: {2026: 0.055, 2027: 0.050, 2028: 0.045, 2029: 0.040, 2030: 0.035}
+  cogs_as_pct_revenue: {2026: 0.531, 2027: 0.530, 2028: 0.529, 2029: 0.528, 2030: 0.527}
+  # Cash SG&A proxy excludes D&A so the fixed-asset schedule can add it back once.
+  sga_as_pct_revenue: {2026: 0.038, 2027: 0.038, 2028: 0.038, 2029: 0.038, 2030: 0.038}
+  rd_as_pct_revenue: {2026: 0.084, 2027: 0.085, 2028: 0.086, 2029: 0.087, 2030: 0.088}
+  other_operating_income_as_pct_revenue: 0.000
+  tax_rate: 0.165
+  dividend_payout_ratio: 0.150
+
+working_capital:
+  days_sales_outstanding: 32.0
+  days_inventory_outstanding: 11.0
+  days_payables_outstanding: 114.0
+  other_current_assets_as_pct_revenue: 0.000
+  accrued_liabilities_as_pct_revenue: 0.000
+
+fixed_assets:
+  capex_as_pct_revenue: 0.030
+  depreciation_as_pct_beginning_ppe: 0.240
+  useful_life: 5.0
+  residual_value_rate: 0.05
+  asset_disposals: 0.0
+
+debt:
+  short_term_interest_rate: 0.050
+  long_term_interest_rate: 0.048
+  minimum_cash_as_pct_revenue: 0.050
+  new_borrowing: 0.0
+  debt_repayment: 5000.0
+  share_issuance: 0.0
+  share_repurchases: 80000.0
+
+solver:
+  max_iterations: 50
+  tolerance: 0.00000001

@@ -1,0 +1,61 @@
+# Illustrative model inputs dated 2026-07-14; not live market data or investment advice.
+# Debt, cash, and diluted shares are overwritten by standardized FY2025 SEC history at runtime.
+risk_free_rate: 0.0425
+equity_risk_premium: 0.0500
+beta: 1.20
+pre_tax_cost_of_debt: 0.0500
+target_debt_weight: 0.10
+target_equity_weight: 0.90
+terminal_growth_rate: 0.0250
+exit_multiple: 22.0
+debt: 0.0
+preferred_stock: 0.0
+minority_interest: 0.0
+cash: 0.0
+non_operating_investments: 0.0
+diluted_shares: 1.0
+
+metadata:
+  valuation_date: "2026-07-14"
+  scenario_name: "Illustrative AAPL compatibility case"
+  is_illustrative: true
+  warnings:
+    - "Inputs are for framework compatibility testing, not current investment research."
+    - "Refresh market inputs, capital structure, and terminal assumptions before live use."
+  sources:
+    risk_free_rate:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Placeholder long-duration U.S. risk-free rate for deterministic testing."
+    equity_risk_premium:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Placeholder U.S. equity risk premium for deterministic testing."
+    beta:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Placeholder beta; observation window and relevering require analyst review."
+    pre_tax_cost_of_debt:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Placeholder borrowing cost requiring debt-yield and spread support."
+    terminal_growth_rate:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Long-run nominal growth assumption requiring macroeconomic support."
+    exit_multiple:
+      source_name: "Illustrative analyst input"
+      source_url:
+      as_of_date: "2026-07-14"
+      accessed_date: "2026-07-14"
+      rationale: "Cross-check only; automatic comparable-company analysis is out of scope."

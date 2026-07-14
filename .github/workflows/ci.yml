@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install package and test dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Compile Python sources
+        run: python -m compileall -q src tests scripts
+      - name: Lint Python sources
+        run: ruff check src tests scripts
+      - name: Type-check package
+        run: mypy src/fmva
+      - name: Run tests
+        run: pytest
+      - name: Audit public release candidates
+        run: python scripts/public_release_check.py
+      - name: Run pinned WMT workflow offline
+        run: >-
+          python -m fmva.run
+          --history-json data/sample/wmt_fy2022_2026_history.json
+          --forecast-assumptions examples/wmt/forecast_assumptions.yaml
+          --valuation-assumptions examples/wmt/valuation_assumptions.yaml
+          --output "${{ runner.temp }}/wmt"
+      - name: Run pinned AAPL workflow offline
+        run: >-
+          python -m fmva.run
+          --history-json data/sample/aapl_fy2021_2025_history.json
+          --forecast-assumptions examples/aapl/forecast_assumptions.yaml
+          --valuation-assumptions examples/aapl/valuation_assumptions.yaml
+          --output "${{ runner.temp }}/aapl"

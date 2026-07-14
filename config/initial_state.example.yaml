@@ -1,0 +1,17 @@
+fiscal_year: 2024
+revenue: 1000.0
+cash_and_equivalents: 100.0
+accounts_receivable: 100.0
+inventory: 80.0
+other_current_assets: 20.0
+property_plant_equipment: 300.0
+other_assets: 400.0
+accounts_payable: 70.0
+accrued_liabilities: 30.0
+short_term_debt: 50.0
+long_term_debt: 150.0
+other_liabilities: 200.0
+contributed_equity: 250.0
+retained_earnings: 250.0
+net_income: 140.0
+diluted_shares: 100.0

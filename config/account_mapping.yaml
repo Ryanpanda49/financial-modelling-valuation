@@ -61,11 +61,11 @@ accounts:
   total_assets:
     {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Total assets., accepted_tags: [{tag: Assets, priority: 10}]}
   accounts_payable:
-    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Accounts payable., accepted_tags: [{tag: AccountsPayableCurrent, priority: 10}, {tag: AccountsPayableAndAccruedLiabilitiesCurrent, priority: 20}]}
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Accounts payable., accepted_tags: [{tag: AccountsPayableCurrent, priority: 10}, {tag: AccountsPayableTradeCurrent, priority: 20}, {tag: AccountsPayableAndAccruedLiabilitiesCurrent, priority: 30}]}
   accrued_liabilities:
     {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Accrued liabilities current., accepted_tags: [{tag: AccruedLiabilitiesCurrent, priority: 10}, {tag: EmployeeRelatedLiabilitiesCurrent, priority: 20}]}
   short_term_debt:
-    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Short-term borrowings and current debt., accepted_tags: [{tag: ShortTermBorrowings, priority: 10}, {tag: LongTermDebtCurrent, priority: 20}, {tag: ShortTermBorrowingsAndCurrentMaturitiesOfLongTermDebt, priority: 30}]}
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Short-term borrowings and current debt., accepted_tags: [{tag: ShortTermBorrowings, priority: 10}, {tag: LongTermDebtCurrent, priority: 20}, {tag: ShortTermBorrowingsAndCurrentMaturitiesOfLongTermDebt, priority: 30}, {tag: NotesAndLoansPayable, priority: 40}]}
   current_lease_liabilities:
     {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Current operating and finance lease liabilities., accepted_tags: [{tag: OperatingLeaseLiabilityCurrent, priority: 10}, {tag: FinanceLeaseLiabilityCurrent, priority: 20}]}
   other_current_liabilities:
@@ -73,7 +73,7 @@ accounts:
   total_current_liabilities:
     {statement: balance_sheet, fact_kind: instant, sign: positive, required: true, unit_type: currency, description: Total current liabilities., accepted_tags: [{tag: LiabilitiesCurrent, priority: 10}]}
   long_term_debt:
-    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Long-term debt excluding current portion., accepted_tags: [{tag: LongTermDebtNoncurrent, priority: 10}, {tag: LongTermDebt, priority: 20}]}
+    {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Long-term debt excluding current portion when separately reported; fallback may include current maturities., accepted_tags: [{tag: LongTermDebtNoncurrent, priority: 10}, {tag: LongTermDebt, priority: 20}, {tag: LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities, priority: 30}]}
   noncurrent_lease_liabilities:
     {statement: balance_sheet, fact_kind: instant, sign: positive, required: false, unit_type: currency, description: Noncurrent operating and finance lease liabilities., accepted_tags: [{tag: OperatingLeaseLiabilityNoncurrent, priority: 10}, {tag: FinanceLeaseLiabilityNoncurrent, priority: 20}]}
   deferred_tax_liabilities:

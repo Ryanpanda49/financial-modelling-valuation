@@ -20,10 +20,10 @@ The repository foundation, SEC data layer, standardized history foundation, link
 engine, financial ratios, DCF, sensitivity analysis, Excel workbooks, Markdown reports,
 structured CSV tables, and static charts are implemented. Live WMT SEC mapping and a complete
 FY2022–FY2026 historical-to-FY2031 forecast run have been validated, including historical
-ratios and historical-to-forecast trend charts. A sanitized public WMT history snapshot and
-an AAPL technology-company snapshot and a COST membership-retail snapshot provide deterministic
-offline regression coverage. Valuation inputs support dated field-level source metadata;
-committed examples remain explicitly illustrative.
+ratios and historical-to-forecast trend charts. Sanitized public WMT, AAPL, COST, KO, and MSFT
+snapshots provide deterministic offline regression coverage
+across retail, consumer brands, and technology. Valuation inputs support dated field-level source
+metadata; committed examples remain explicitly illustrative.
 
 Implemented:
 
@@ -47,11 +47,16 @@ Implemented:
 - Live WMT mapping validation with all historical, forecast, and DCF checks passing.
 - Live AAPL compatibility validation with all historical, forecast, and DCF checks passing.
 - Live COST compatibility validation with all historical, forecast, and DCF checks passing.
+- Live KO and MSFT compatibility validation with all historical, forecast, and DCF checks passing.
+- Annual panel selection anchored to mapped revenue facts, preventing filing-date instant facts
+  from creating incomplete future fiscal years.
 - Historical and forecast ratios displayed together with continuous blue trend charts.
 - Offline unit and integration tests.
 - Versioned public WMT history fixture with no request headers or personal contact data.
 - Versioned public AAPL fixture proving the mapping is not retailer-specific.
 - Versioned public COST fixture covering a non-calendar fiscal year and membership retailer.
+- Versioned public KO and MSFT fixtures extending regression coverage to consumer brands, debt
+  fallbacks, R&D, intangible assets, and high capital expenditure.
 - Python 3.11/3.12 GitHub Actions regression workflow and public-release privacy audit.
 
 ## Installation
@@ -94,6 +99,8 @@ The parallel AAPL compatibility run is documented in
 The third COST regression case is documented in
 [the COST example](examples/cost/README.md) and
 [validation note](docs/cost_compatibility_validation.md).
+KO and MSFT are documented in their respective example directories and the combined
+[compatibility note](docs/ko_msft_compatibility_validation.md).
 
 ## CLI data-layer example
 
@@ -156,7 +163,7 @@ automatically shifted because assumptions must remain explicit research inputs.
 pytest
 ```
 
-Tests use synthetic fixtures plus sanitized public WMT, AAPL, and COST snapshots; they do not
+Tests use synthetic fixtures plus five sanitized public-company snapshots; they do not
 require network access or contact details. Live SEC refresh remains an explicit researcher-run
 validation.
 
@@ -171,6 +178,7 @@ validation.
 - [WMT live SEC validation](docs/wmt_live_validation.md)
 - [AAPL compatibility validation](docs/aapl_compatibility_validation.md)
 - [COST compatibility validation](docs/cost_compatibility_validation.md)
+- [KO and MSFT compatibility validation](docs/ko_msft_compatibility_validation.md)
 
 ## Data and privacy
 

@@ -1,0 +1,39 @@
+# Illustrative compatibility inputs based on MSFT FY2021-FY2025 SEC history.
+forecast_years: [2026, 2027, 2028, 2029, 2030]
+
+operating:
+  revenue_growth: {2026: 0.120, 2027: 0.110, 2028: 0.100, 2029: 0.090, 2030: 0.080}
+  cogs_as_pct_revenue: {2026: 0.310, 2027: 0.305, 2028: 0.300, 2029: 0.297, 2030: 0.295}
+  # Cash SG&A residual excludes R&D and schedule-driven D&A.
+  sga_as_pct_revenue: {2026: 0.039, 2027: 0.039, 2028: 0.039, 2029: 0.039, 2030: 0.039}
+  rd_as_pct_revenue: {2026: 0.116, 2027: 0.117, 2028: 0.118, 2029: 0.119, 2030: 0.120}
+  other_operating_income_as_pct_revenue: 0.000
+  tax_rate: 0.175
+  dividend_payout_ratio: 0.250
+
+working_capital:
+  days_sales_outstanding: 82.0
+  days_inventory_outstanding: 5.0
+  days_payables_outstanding: 103.0
+  other_current_assets_as_pct_revenue: 0.000
+  accrued_liabilities_as_pct_revenue: 0.049
+
+fixed_assets:
+  capex_as_pct_revenue: {2026: 0.220, 2027: 0.200, 2028: 0.180, 2029: 0.160, 2030: 0.140}
+  depreciation_as_pct_beginning_ppe: 0.108
+  useful_life: 10.0
+  residual_value_rate: 0.05
+  asset_disposals: 0.0
+
+debt:
+  short_term_interest_rate: 0.045
+  long_term_interest_rate: 0.043
+  minimum_cash_as_pct_revenue: 0.100
+  new_borrowing: 0.0
+  debt_repayment: 3000.0
+  share_issuance: 0.0
+  share_repurchases: 20000.0
+
+solver:
+  max_iterations: 50
+  tolerance: 0.00000001

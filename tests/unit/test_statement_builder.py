@@ -140,3 +140,30 @@ def test_parent_income_derivation_discloses_optional_zero_component() -> None:
         issue.account == "net_income_attributable_to_parent"
         for issue in result.quality_issues
     )
+
+
+def test_fiscal_year_panel_ignores_filing_date_instant_fact() -> None:
+    payload = json.loads(Path("tests/fixtures/wmt_companyfacts_sample.json").read_text())
+    payload["facts"]["dei"] = {
+        "EntityCommonStockSharesOutstanding": {
+            "label": "Entity Common Stock, Shares Outstanding",
+            "units": {
+                "shares": [
+                    {
+                        "end": "2025-03-12",
+                        "val": 8000000000,
+                        "accn": "0000104169-25-000001",
+                        "fy": 2024,
+                        "fp": "FY",
+                        "form": "10-K",
+                        "filed": "2025-03-14",
+                    }
+                ]
+            },
+        }
+    }
+    result = StatementBuilder(
+        AccountMapper(AccountMap.from_yaml("config/account_mapping.yaml"))
+    ).build(CompanyFacts.from_sec_payload(payload), years=2)
+
+    assert list(result.statements["income_statement"].columns) == [2023, 2024]

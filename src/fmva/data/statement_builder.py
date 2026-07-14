@@ -289,13 +289,13 @@ class StatementBuilder:
     def build(self, facts: CompanyFacts, *, years: int = 5) -> HistoricalStatements:
         """Build a common fiscal-year panel for every configured canonical account."""
 
-        available_years = sorted(
-            {
-                item.fiscal_year
-                for item in facts.observations
-                if item.fiscal_year is not None and item.form in {"10-K", "10-K/A"}
-            }
-        )[-years:]
+        if years <= 0:
+            raise ValueError("years must be positive")
+        available_years = self._available_fiscal_years(facts)[-years:]
+        if not available_years:
+            raise HistoricalDataError(
+                "No mapped annual revenue facts were found; cannot establish fiscal-year coverage."
+            )
         observations: list[CanonicalObservation] = []
         issues: list[QualityIssue] = []
         for definition in self.mapper.account_map.accounts.values():
@@ -393,6 +393,26 @@ class StatementBuilder:
             observations=tuple(observations),
             quality_issues=tuple(issues),
         )
+
+    def _available_fiscal_years(self, facts: CompanyFacts) -> list[int]:
+        """Anchor the statement panel to mapped annual revenue observations.
+
+        SEC Company Facts can include filing-date instant facts such as entity shares in a
+        10-K. Their end date may fall in the following calendar year and must not create a
+        spurious fiscal year before that year's annual statements exist.
+        """
+
+        revenue = self.mapper.definition("revenue")
+        available: set[int] = set()
+        for candidate in revenue.accepted_tags:
+            for item in facts.annual_observations(
+                candidate.tag,
+                taxonomy=candidate.taxonomy,
+                years=None,
+            ):
+                if item.fiscal_year is not None and item.fact_kind is revenue.fact_kind:
+                    available.add(item.fiscal_year)
+        return sorted(available)
 
 
 def _missing(account: str, statement: str, fiscal_year: int) -> CanonicalObservation:

@@ -54,3 +54,17 @@ jobs:
           --forecast-assumptions examples/cost/forecast_assumptions.yaml
           --valuation-assumptions examples/cost/valuation_assumptions.yaml
           --output "${{ runner.temp }}/cost"
+      - name: Run pinned KO workflow offline
+        run: >-
+          python -m fmva.run
+          --history-json data/sample/ko_fy2021_2025_history.json
+          --forecast-assumptions examples/ko/forecast_assumptions.yaml
+          --valuation-assumptions examples/ko/valuation_assumptions.yaml
+          --output "${{ runner.temp }}/ko"
+      - name: Run pinned MSFT workflow offline
+        run: >-
+          python -m fmva.run
+          --history-json data/sample/msft_fy2021_2025_history.json
+          --forecast-assumptions examples/msft/forecast_assumptions.yaml
+          --valuation-assumptions examples/msft/valuation_assumptions.yaml
+          --output "${{ runner.temp }}/msft"

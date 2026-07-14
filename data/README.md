@@ -15,6 +15,10 @@ verify that the canonical mapping and linked model are not retailer-specific.
 `sample/cost_fy2021_2025_history.json` adds Costco as a third registrant, covering a
 membership retailer and a fiscal year that does not align with the calendar year.
 
+`sample/ko_fy2021_2025_history.json` and `sample/msft_fy2021_2025_history.json` extend the
+matrix to consumer brands and technology, including debt fallbacks, R&D, intangible assets,
+short-term investments, and capital-intensive cloud infrastructure.
+
 The fixture exists so the complete research workflow can be tested offline and deterministically.
 It is not a substitute for refreshing SEC filings before live research. Maintainers can regenerate
 it with `python scripts/build_public_history_fixture.py TICKER` after creating the ignored local

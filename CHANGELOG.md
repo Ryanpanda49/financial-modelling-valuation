@@ -5,6 +5,10 @@
 - Added live COST SEC compatibility validation and a sanitized FY2021–FY2025 public fixture.
 - Added an illustrative COST five-year forecast/DCF case and deterministic offline regression.
 - Extended CI and the public-release audit to cover the third-company fixture and output workflow.
+- Added KO and MSFT public SEC fixtures, illustrative forecasts, DCF cases, and offline regressions.
+- Fixed fiscal-year panel selection so filing-date instant facts cannot create incomplete future years.
+- Added KO trade-payables and debt tag fallbacks with explicit field-level provenance.
+- Expanded Python 3.11/3.12 CI to generate five complete company output bundles offline.
 
 ## 0.1.0 - 2026-07-14
 

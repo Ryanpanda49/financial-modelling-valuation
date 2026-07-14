@@ -1,0 +1,39 @@
+# Illustrative compatibility inputs based on KO FY2021-FY2025 SEC history.
+forecast_years: [2026, 2027, 2028, 2029, 2030]
+
+operating:
+  revenue_growth: {2026: 0.050, 2027: 0.045, 2028: 0.040, 2029: 0.035, 2030: 0.030}
+  cogs_as_pct_revenue: {2026: 0.385, 2027: 0.383, 2028: 0.381, 2029: 0.380, 2030: 0.380}
+  # Cash operating-cost residual excluding R&D and schedule-driven D&A.
+  sga_as_pct_revenue: {2026: 0.307, 2027: 0.306, 2028: 0.305, 2029: 0.304, 2030: 0.304}
+  rd_as_pct_revenue: 0.000
+  other_operating_income_as_pct_revenue: 0.000
+  tax_rate: 0.185
+  dividend_payout_ratio: 0.750
+
+working_capital:
+  days_sales_outstanding: 26.0
+  days_inventory_outstanding: 90.0
+  days_payables_outstanding: 110.0
+  other_current_assets_as_pct_revenue: 0.050
+  accrued_liabilities_as_pct_revenue: 0.000
+
+fixed_assets:
+  capex_as_pct_revenue: {2026: 0.044, 2027: 0.043, 2028: 0.042, 2029: 0.041, 2030: 0.040}
+  depreciation_as_pct_beginning_ppe: 0.110
+  useful_life: 10.0
+  residual_value_rate: 0.05
+  asset_disposals: 0.0
+
+debt:
+  short_term_interest_rate: 0.045
+  long_term_interest_rate: 0.043
+  minimum_cash_as_pct_revenue: 0.150
+  new_borrowing: 0.0
+  debt_repayment: 2000.0
+  share_issuance: 0.0
+  share_repurchases: 2000.0
+
+solver:
+  max_iterations: 50
+  tolerance: 0.00000001

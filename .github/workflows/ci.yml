@@ -16,8 +16,8 @@ jobs:
         python-version: ["3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
@@ -28,7 +28,7 @@ jobs:
       - name: Lint Python sources
         run: ruff check src tests scripts
       - name: Type-check package
-        run: mypy src/fmva
+        run: mypy --python-version "${{ matrix.python-version }}" src/fmva
       - name: Run tests
         run: pytest
       - name: Audit public release candidates

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 - 2026-07-14
 
 - Added architecture, data model, MVP plan, and internal reference-model analysis.
 - Added repository foundation and first SEC data-layer implementation.

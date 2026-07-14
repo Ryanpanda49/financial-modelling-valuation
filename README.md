@@ -1,5 +1,7 @@
 # Financial Modelling & Valuation Framework
 
+[![CI](https://github.com/Ryanpanda49/financial-modelling-valuation/actions/workflows/ci.yml/badge.svg)](https://github.com/Ryanpanda49/financial-modelling-valuation/actions/workflows/ci.yml)
+
 An open-source, modular and explainable financial modelling and valuation framework for
 U.S. public companies. The project retrieves standardized financial data from SEC EDGAR,
 builds linked financial forecasts, performs financial analysis and DCF valuation, and

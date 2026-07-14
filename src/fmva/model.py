@@ -13,6 +13,7 @@ from fmva.checks.models import CheckResult
 from fmva.config.loader import load_config
 from fmva.data.account_mapping import AccountMap, AccountMapper
 from fmva.data.statement_builder import HistoricalStatements, StatementBuilder
+from fmva.data.tabular_import import import_canonical_history
 from fmva.exceptions import HistoricalDataError
 from fmva.forecasting.assumptions import ForecastAssumptions
 from fmva.forecasting.history_adapter import OpeningStateResult, historical_to_initial_state
@@ -131,6 +132,30 @@ class ValuationModel:
         return cls.from_history(
             company=company,
             history=HistoricalStatements.from_dict(payload),
+            forecast_assumptions_path=forecast_assumptions_path,
+            valuation_assumptions_path=valuation_assumptions_path,
+            tolerance=tolerance,
+        )
+
+    @classmethod
+    def from_tabular_history(
+        cls,
+        history_path: str | Path,
+        *,
+        forecast_assumptions_path: str | Path,
+        valuation_assumptions_path: str | Path,
+        account_mapping_path: str | Path = "config/account_mapping.yaml",
+        tolerance: float = 1e-6,
+    ) -> ValuationModel:
+        """Construct an offline workflow from canonical CSV or Excel history."""
+
+        imported = import_canonical_history(
+            history_path,
+            account_mapping_path=account_mapping_path,
+        )
+        return cls.from_history(
+            company=imported.company,
+            history=imported.history,
             forecast_assumptions_path=forecast_assumptions_path,
             valuation_assumptions_path=valuation_assumptions_path,
             tolerance=tolerance,

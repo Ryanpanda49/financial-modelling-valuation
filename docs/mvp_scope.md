@@ -17,7 +17,7 @@ The reference-model analysis and system design were approved. Phase 0 and the fi
 | Phase 3 — Analysis | Complete live for WMT | Historical and forecast growth, profitability, liquidity, leverage, efficiency, cash-flow ratios, warnings, and continuous trend charts are implemented. |
 | Phase 4 — Forecast engine | Complete live for WMT draft | FY2027–FY2031 linked schedules include operating normalization, working capital, PP&E, debt/interest, retained earnings, share issuance/repurchases, and passing checks without a plug. |
 | Phase 5 — DCF and sensitivity | Complete | UFCF, WACC, both terminal methods, equity bridge, implied price, structured checks, and WACC/g sensitivity are implemented. |
-| Phase 6 — Outputs and release readiness | Complete | `ModelResult`, fourteen-sheet blue Excel, Markdown, CSV tables, six PNG charts, versioned WMT fixture, privacy audit, and Python 3.11/3.12 CI workflow. |
+| Phase 6 — Outputs and release readiness | Complete | `ModelResult`, fourteen-sheet blue Excel, Markdown, CSV tables, six PNG charts, five JSON fixtures, canonical CSV/XLSX fallback, scenario runs, privacy audit, and Python 3.11/3.12 CI. |
 
 ## In scope
 
@@ -198,8 +198,8 @@ Exit criteria:
 
 ## Next gate
 
-Validate the five-company regression matrix from a clean GitHub Actions run, then prioritize
-fallback CSV/Excel ingestion and stronger valuation-critical-account diagnostics for v0.2.
+Validate manual Excel ingestion and the three-case scenario workflow from a clean GitHub Actions
+run, then begin the extensible business-driver interface for v0.2.
 All committed valuation cases remain illustrative by design; live research
 configurations must replace them with dated, sourced market inputs using the enforced metadata
 schema.

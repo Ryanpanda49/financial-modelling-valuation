@@ -9,6 +9,10 @@
 - Fixed fiscal-year panel selection so filing-date instant facts cannot create incomplete future years.
 - Added KO trade-payables and debt tag fallbacks with explicit field-level provenance.
 - Expanded Python 3.11/3.12 CI to generate five complete company output bundles offline.
+- Added canonical CSV/XLSX historical input with strict schema, units, provenance, and duplicates.
+- Added a public blue COST manual-input workbook with visible instructions and input checks.
+- Added named multi-scenario orchestration and illustrative COST base/upside/downside cases.
+- Added valuation-bridge readiness and debt/interest consistency diagnostics.
 
 ## 0.1.0 - 2026-07-14
 

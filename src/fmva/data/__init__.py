@@ -13,3 +13,6 @@ __all__ = [
     "SelectionMethod",
     "StatementBuilder",
 ]
+from fmva.data.tabular_import import ImportedHistory, import_canonical_history
+
+__all__ = ["ImportedHistory", "import_canonical_history"]

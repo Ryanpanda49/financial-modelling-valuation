@@ -1,0 +1,14 @@
+name: "Illustrative COST operating cases"
+scenarios:
+  - name: "Base"
+    description: "Compatibility base case; not investment research."
+    forecast_assumptions: forecast_assumptions.yaml
+    valuation_assumptions: valuation_assumptions.yaml
+  - name: "Upside"
+    description: "Higher growth and operating efficiency case."
+    forecast_assumptions: forecast_assumptions.upside.yaml
+    valuation_assumptions: valuation_assumptions.yaml
+  - name: "Downside"
+    description: "Lower growth and operating deleverage case."
+    forecast_assumptions: forecast_assumptions.downside.yaml
+    valuation_assumptions: valuation_assumptions.yaml

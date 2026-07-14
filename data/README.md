@@ -19,6 +19,10 @@ membership retailer and a fiscal year that does not align with the calendar year
 matrix to consumer brands and technology, including debt fallbacks, R&D, intangible assets,
 short-term investments, and capital-intensive cloud infrastructure.
 
+`sample/cost_manual_history_input.xlsx` is a blue, auditable example of the canonical Excel
+fallback contract. It contains only public COST SEC data and can be copied for researcher-supplied
+history. The workbook is tested end to end against the same model result as the JSON fixture.
+
 The fixture exists so the complete research workflow can be tested offline and deterministically.
 It is not a substitute for refreshing SEC filings before live research. Maintainers can regenerate
 it with `python scripts/build_public_history_fixture.py TICKER` after creating the ignored local

@@ -17,3 +17,22 @@ inputs are illustrative compatibility assumptions, not company guidance or inves
 
 Refresh the SEC history and replace every market assumption with dated research support before
 using the framework for current analysis.
+
+## Manual Excel fallback
+
+```bash
+python -m fmva.run \
+  --history-table data/sample/cost_manual_history_input.xlsx \
+  --forecast-assumptions examples/cost/forecast_assumptions.yaml \
+  --valuation-assumptions examples/cost/valuation_assumptions.yaml \
+  --output outputs/cost_manual
+```
+
+## Base, upside, and downside cases
+
+```bash
+python -m fmva.run \
+  --history-json data/sample/cost_fy2021_2025_history.json \
+  --scenario-set examples/cost/scenario_set.yaml \
+  --output outputs/cost_scenarios
+```

@@ -68,3 +68,16 @@ jobs:
           --forecast-assumptions examples/msft/forecast_assumptions.yaml
           --valuation-assumptions examples/msft/valuation_assumptions.yaml
           --output "${{ runner.temp }}/msft"
+      - name: Run canonical Excel fallback offline
+        run: >-
+          python -m fmva.run
+          --history-table data/sample/cost_manual_history_input.xlsx
+          --forecast-assumptions examples/cost/forecast_assumptions.yaml
+          --valuation-assumptions examples/cost/valuation_assumptions.yaml
+          --output "${{ runner.temp }}/cost-manual"
+      - name: Run COST scenario set offline
+        run: >-
+          python -m fmva.run
+          --history-json data/sample/cost_fy2021_2025_history.json
+          --scenario-set examples/cost/scenario_set.yaml
+          --output "${{ runner.temp }}/cost-scenarios"

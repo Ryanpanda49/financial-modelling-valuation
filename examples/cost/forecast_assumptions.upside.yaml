@@ -1,0 +1,31 @@
+# Illustrative upside operating case for scenario workflow testing; not investment advice.
+forecast_years: [2026, 2027, 2028, 2029, 2030]
+operating:
+  revenue_growth: {2026: 0.090, 2027: 0.080, 2028: 0.075, 2029: 0.070, 2030: 0.065}
+  cogs_as_pct_revenue: {2026: 0.866, 2027: 0.865, 2028: 0.864, 2029: 0.863, 2030: 0.863}
+  sga_as_pct_revenue: {2026: 0.0798, 2027: 0.0797, 2028: 0.0796, 2029: 0.0795, 2030: 0.0795}
+  rd_as_pct_revenue: 0.000
+  other_operating_income_as_pct_revenue: 0.000
+  tax_rate: 0.250
+  dividend_payout_ratio: 0.300
+working_capital:
+  days_sales_outstanding: 4.0
+  days_inventory_outstanding: 27.0
+  days_payables_outstanding: 31.0
+  other_current_assets_as_pct_revenue: 0.000
+  accrued_liabilities_as_pct_revenue: 0.010
+fixed_assets:
+  capex_as_pct_revenue: {2026: 0.0210, 2027: 0.0210, 2028: 0.0205, 2029: 0.0205, 2030: 0.0200}
+  depreciation_as_pct_beginning_ppe: 0.078
+  useful_life: 15.0
+  residual_value_rate: 0.05
+  asset_disposals: 0.0
+debt:
+  short_term_interest_rate: 0.050
+  long_term_interest_rate: 0.048
+  minimum_cash_as_pct_revenue: 0.035
+  new_borrowing: 0.0
+  debt_repayment: 500.0
+  share_issuance: 0.0
+  share_repurchases: 1000.0
+solver: {max_iterations: 50, tolerance: 0.00000001}

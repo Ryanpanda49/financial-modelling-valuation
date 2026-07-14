@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,6 +59,23 @@ def main() -> int:
         content = full_path.read_bytes()
         if PERSONAL_EMAIL.search(content):
             problems.append(f"personal email address found in public candidate: {path}")
+        if full_path.suffix.lower() in {".xlsx", ".xlsm"}:
+            try:
+                with zipfile.ZipFile(full_path) as workbook:
+                    for member in workbook.infolist():
+                        if member.file_size > 2_000_000:
+                            problems.append(
+                                f"oversized workbook member in {path}: {member.filename}"
+                            )
+                            continue
+                        member_content = workbook.read(member)
+                        if PERSONAL_EMAIL.search(member_content):
+                            problems.append(
+                                f"personal email address found inside workbook: {path}"
+                            )
+                            break
+            except (OSError, zipfile.BadZipFile) as exc:
+                problems.append(f"public workbook is invalid: {path}: {exc}")
 
     fixture_paths = (
         ROOT / "data/sample/wmt_fy2022_2026_history.json",

@@ -50,6 +50,11 @@ Implemented:
 - Live KO and MSFT compatibility validation with all historical, forecast, and DCF checks passing.
 - Annual panel selection anchored to mapped revenue facts, preventing filing-date instant facts
   from creating incomplete future fiscal years.
+- Canonical CSV/XLSX fallback input with manual provenance, strict units, duplicate detection, and
+  the same downstream model checks as SEC history.
+- Named scenario-set orchestration that reuses one history dataset across base, upside, and
+  downside assumption files.
+- Valuation-bridge readiness and debt/interest consistency diagnostics before DCF construction.
 - Historical and forecast ratios displayed together with continuous blue trend charts.
 - Offline unit and integration tests.
 - Versioned public WMT history fixture with no request headers or personal contact data.
@@ -99,6 +104,8 @@ The parallel AAPL compatibility run is documented in
 The third COST regression case is documented in
 [the COST example](examples/cost/README.md) and
 [validation note](docs/cost_compatibility_validation.md).
+Its [manual Excel fallback](docs/manual_data_input.md) and
+[scenario workflow](docs/scenario_analysis.md) are also reproducible offline.
 KO and MSFT are documented in their respective example directories and the combined
 [compatibility note](docs/ko_msft_compatibility_validation.md).
 
@@ -179,6 +186,8 @@ validation.
 - [AAPL compatibility validation](docs/aapl_compatibility_validation.md)
 - [COST compatibility validation](docs/cost_compatibility_validation.md)
 - [KO and MSFT compatibility validation](docs/ko_msft_compatibility_validation.md)
+- [Manual CSV and Excel input](docs/manual_data_input.md)
+- [Scenario analysis](docs/scenario_analysis.md)
 
 ## Data and privacy
 

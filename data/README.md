@@ -12,7 +12,10 @@ quality metadata, but no SEC request headers, personal contact details, or cache
 `sample/aapl_fy2021_2025_history.json` provides the same contract for Apple and is used to
 verify that the canonical mapping and linked model are not retailer-specific.
 
+`sample/cost_fy2021_2025_history.json` adds Costco as a third registrant, covering a
+membership retailer and a fiscal year that does not align with the calendar year.
+
 The fixture exists so the complete research workflow can be tested offline and deterministically.
 It is not a substitute for refreshing SEC filings before live research. Maintainers can regenerate
-it with `python scripts/build_public_history_fixture.py WMT` after creating the ignored local
+it with `python scripts/build_public_history_fixture.py TICKER` after creating the ignored local
 file `config/model_config.yaml` with a valid SEC User-Agent.

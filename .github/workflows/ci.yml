@@ -47,3 +47,10 @@ jobs:
           --forecast-assumptions examples/aapl/forecast_assumptions.yaml
           --valuation-assumptions examples/aapl/valuation_assumptions.yaml
           --output "${{ runner.temp }}/aapl"
+      - name: Run pinned COST workflow offline
+        run: >-
+          python -m fmva.run
+          --history-json data/sample/cost_fy2021_2025_history.json
+          --forecast-assumptions examples/cost/forecast_assumptions.yaml
+          --valuation-assumptions examples/cost/valuation_assumptions.yaml
+          --output "${{ runner.temp }}/cost"

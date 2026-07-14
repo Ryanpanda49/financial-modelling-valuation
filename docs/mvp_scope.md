@@ -12,8 +12,8 @@ The reference-model analysis and system design were approved. Phase 0 and the fi
 |---|---|---|
 | Reference analysis and design | Complete | Four design documents reviewed and retained in `docs/`. |
 | Phase 0 — Repository foundation | Complete | Git repository, package layout, configuration, logging, exceptions, README, license, privacy rules, and tests. |
-| Phase 1 — SEC data layer | Complete live for WMT and AAPL | Client, compression decoding, cache, limiter, ticker/CIK lookup, Company Facts parser, annual selector, synthetic fixtures, and two-company live retrieval. |
-| Phase 2 — Standardized history | Complete live for WMT and AAPL | Each public fixture contains five fiscal years and 330 provenance records, no required mapping issues, balanced statements, and exact cash roll-forwards. |
+| Phase 1 — SEC data layer | Complete live for WMT, AAPL, and COST | Client, compression decoding, cache, limiter, ticker/CIK lookup, Company Facts parser, annual selector, synthetic fixtures, and three-company live retrieval. |
+| Phase 2 — Standardized history | Complete live for WMT, AAPL, and COST | Each public fixture contains five fiscal years and 330 provenance records, no required mapping issues, balanced statements, and exact cash roll-forwards. |
 | Phase 3 — Analysis | Complete live for WMT | Historical and forecast growth, profitability, liquidity, leverage, efficiency, cash-flow ratios, warnings, and continuous trend charts are implemented. |
 | Phase 4 — Forecast engine | Complete live for WMT draft | FY2027–FY2031 linked schedules include operating normalization, working capital, PP&E, debt/interest, retained earnings, share issuance/repurchases, and passing checks without a plug. |
 | Phase 5 — DCF and sensitivity | Complete | UFCF, WACC, both terminal methods, equity bridge, implied price, structured checks, and WACC/g sensitivity are implemented. |
@@ -198,8 +198,8 @@ Exit criteria:
 
 ## Next gate
 
-Create the first public Git commit and publish the repository without the ignored reference
-files, private SEC configuration, caches, or generated local outputs. Confirm the Python 3.11
-and 3.12 workflows from a clean GitHub clone. Committed WMT and AAPL valuation cases remain
-illustrative by design; live research configurations must replace them with dated, sourced
-market inputs using the enforced metadata schema.
+Validate the three-company regression matrix from a clean GitHub Actions run, then expand v0.2
+data compatibility only where a new registrant exposes a genuine mapping or period-selection gap.
+Committed WMT, AAPL, and COST valuation cases remain illustrative by design; live research
+configurations must replace them with dated, sourced market inputs using the enforced metadata
+schema.

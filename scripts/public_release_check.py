@@ -62,6 +62,7 @@ def main() -> int:
     fixture_paths = (
         ROOT / "data/sample/wmt_fy2022_2026_history.json",
         ROOT / "data/sample/aapl_fy2021_2025_history.json",
+        ROOT / "data/sample/cost_fy2021_2025_history.json",
     )
     for fixture_path in fixture_paths:
         try:

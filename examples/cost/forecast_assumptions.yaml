@@ -1,0 +1,40 @@
+# Researcher-editable draft based on COST FY2021-FY2025 SEC history.
+# These are illustrative assumptions, not company guidance or investment advice.
+forecast_years: [2026, 2027, 2028, 2029, 2030]
+
+operating:
+  revenue_growth: {2026: 0.070, 2027: 0.060, 2028: 0.055, 2029: 0.050, 2030: 0.045}
+  cogs_as_pct_revenue: {2026: 0.871, 2027: 0.870, 2028: 0.869, 2029: 0.868, 2030: 0.868}
+  # Cash SG&A proxy excludes D&A so the fixed-asset schedule deducts it once.
+  sga_as_pct_revenue: {2026: 0.0818, 2027: 0.0817, 2028: 0.0816, 2029: 0.0815, 2030: 0.0815}
+  rd_as_pct_revenue: 0.000
+  other_operating_income_as_pct_revenue: 0.000
+  tax_rate: 0.250
+  dividend_payout_ratio: 0.300
+
+working_capital:
+  days_sales_outstanding: 4.0
+  days_inventory_outstanding: 28.0
+  days_payables_outstanding: 30.0
+  other_current_assets_as_pct_revenue: 0.000
+  accrued_liabilities_as_pct_revenue: 0.010
+
+fixed_assets:
+  capex_as_pct_revenue: {2026: 0.0205, 2027: 0.0205, 2028: 0.0200, 2029: 0.0200, 2030: 0.0195}
+  depreciation_as_pct_beginning_ppe: 0.078
+  useful_life: 15.0
+  residual_value_rate: 0.05
+  asset_disposals: 0.0
+
+debt:
+  short_term_interest_rate: 0.050
+  long_term_interest_rate: 0.048
+  minimum_cash_as_pct_revenue: 0.035
+  new_borrowing: 0.0
+  debt_repayment: 500.0
+  share_issuance: 0.0
+  share_repurchases: 1000.0
+
+solver:
+  max_iterations: 50
+  tolerance: 0.00000001

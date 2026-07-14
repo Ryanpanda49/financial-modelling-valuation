@@ -21,9 +21,9 @@ engine, financial ratios, DCF, sensitivity analysis, Excel workbooks, Markdown r
 structured CSV tables, and static charts are implemented. Live WMT SEC mapping and a complete
 FY2022–FY2026 historical-to-FY2031 forecast run have been validated, including historical
 ratios and historical-to-forecast trend charts. A sanitized public WMT history snapshot and
-an AAPL technology-company compatibility snapshot provide deterministic offline regression
-coverage. Valuation inputs now support dated field-level source metadata; committed examples
-remain explicitly illustrative.
+an AAPL technology-company snapshot and a COST membership-retail snapshot provide deterministic
+offline regression coverage. Valuation inputs support dated field-level source metadata;
+committed examples remain explicitly illustrative.
 
 Implemented:
 
@@ -46,10 +46,12 @@ Implemented:
 - Public `ValuationModel.from_sec(...)` orchestration API and `python -m fmva.run` command.
 - Live WMT mapping validation with all historical, forecast, and DCF checks passing.
 - Live AAPL compatibility validation with all historical, forecast, and DCF checks passing.
+- Live COST compatibility validation with all historical, forecast, and DCF checks passing.
 - Historical and forecast ratios displayed together with continuous blue trend charts.
 - Offline unit and integration tests.
 - Versioned public WMT history fixture with no request headers or personal contact data.
 - Versioned public AAPL fixture proving the mapping is not retailer-specific.
+- Versioned public COST fixture covering a non-calendar fiscal year and membership retailer.
 - Python 3.11/3.12 GitHub Actions regression workflow and public-release privacy audit.
 
 ## Installation
@@ -89,6 +91,9 @@ This path is intended for reproducibility and CI. Refresh SEC data before curren
 The parallel AAPL compatibility run is documented in
 [the AAPL example](examples/aapl/README.md) and
 [validation note](docs/aapl_compatibility_validation.md).
+The third COST regression case is documented in
+[the COST example](examples/cost/README.md) and
+[validation note](docs/cost_compatibility_validation.md).
 
 ## CLI data-layer example
 
@@ -151,8 +156,9 @@ automatically shifted because assumptions must remain explicit research inputs.
 pytest
 ```
 
-Tests use synthetic fixtures and the sanitized public WMT snapshot; they do not require network
-access or contact details. The live SEC workflow remains an explicit researcher-run validation.
+Tests use synthetic fixtures plus sanitized public WMT, AAPL, and COST snapshots; they do not
+require network access or contact details. Live SEC refresh remains an explicit researcher-run
+validation.
 
 ## Documentation
 
@@ -164,6 +170,7 @@ access or contact details. The live SEC workflow remains an explicit researcher-
 - [Output style guide](docs/output_style_guide.md)
 - [WMT live SEC validation](docs/wmt_live_validation.md)
 - [AAPL compatibility validation](docs/aapl_compatibility_validation.md)
+- [COST compatibility validation](docs/cost_compatibility_validation.md)
 
 ## Data and privacy
 

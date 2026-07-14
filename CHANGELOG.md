@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added live COST SEC compatibility validation and a sanitized FY2021–FY2025 public fixture.
+- Added an illustrative COST five-year forecast/DCF case and deterministic offline regression.
+- Extended CI and the public-release audit to cover the third-company fixture and output workflow.
+
 ## 0.1.0 - 2026-07-14
 
 - Added architecture, data model, MVP plan, and internal reference-model analysis.

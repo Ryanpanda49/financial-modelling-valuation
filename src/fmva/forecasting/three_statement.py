@@ -89,6 +89,7 @@ class ForecastResult:
     fixed_assets: pd.DataFrame
     debt_schedule: pd.DataFrame
     checks: tuple[CheckResult, ...]
+    business_drivers: pd.DataFrame | None = None
 
 
 class ThreeStatementModel:
@@ -267,6 +268,7 @@ class ThreeStatementModel:
             fixed_assets=_frame(fixed_assets),
             debt_schedule=_frame(debt_schedule),
             checks=(),
+            business_drivers=self.operating_model.driver_table(),
         )
         checks = ForecastCheckSuite().run(result_without_checks, initial)
         return ForecastResult(
@@ -277,6 +279,7 @@ class ThreeStatementModel:
             fixed_assets=result_without_checks.fixed_assets,
             debt_schedule=result_without_checks.debt_schedule,
             checks=checks,
+            business_drivers=result_without_checks.business_drivers,
         )
 
 

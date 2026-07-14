@@ -91,6 +91,8 @@ class ModelResult:
             "dcf_forecast": self.dcf.forecast,
             "sensitivity": self.sensitivity,
         }
+        if self.forecast.business_drivers is not None:
+            tables["business_drivers"] = self.forecast.business_drivers
         if self.historical is not None:
             tables.update(
                 {

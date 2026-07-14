@@ -16,7 +16,9 @@ from fmva.data.statement_builder import HistoricalStatements, StatementBuilder
 from fmva.data.tabular_import import import_canonical_history
 from fmva.exceptions import HistoricalDataError
 from fmva.forecasting.assumptions import ForecastAssumptions
+from fmva.forecasting.business_drivers import load_business_driver_model
 from fmva.forecasting.history_adapter import OpeningStateResult, historical_to_initial_state
+from fmva.forecasting.operating import OperatingModel
 from fmva.forecasting.three_statement import ThreeStatementModel
 from fmva.output import ModelResult
 from fmva.output.assumptions import summarize_assumptions, summarize_valuation_assumptions
@@ -38,6 +40,7 @@ class ValuationModel:
     forecast_assumptions: ForecastAssumptions
     valuation_assumptions: ValuationAssumptions
     historical_checks: tuple[CheckResult, ...]
+    operating_model: OperatingModel | None = None
 
     @classmethod
     def from_sec(
@@ -48,6 +51,7 @@ class ValuationModel:
         forecast_assumptions_path: str | Path = "config/forecast_assumptions.example.yaml",
         valuation_assumptions_path: str | Path = "config/valuation_assumptions.example.yaml",
         account_mapping_path: str | Path = "config/account_mapping.yaml",
+        business_driver_path: str | Path | None = None,
     ) -> ValuationModel:
         """Fetch live SEC data and construct a ready-to-run model.
 
@@ -67,6 +71,7 @@ class ValuationModel:
             forecast_assumptions_path=forecast_assumptions_path,
             valuation_assumptions_path=valuation_assumptions_path,
             tolerance=config.model.absolute_tolerance,
+            business_driver_path=business_driver_path,
         )
 
     @classmethod
@@ -78,6 +83,7 @@ class ValuationModel:
         forecast_assumptions_path: str | Path,
         valuation_assumptions_path: str | Path,
         tolerance: float = 1e-6,
+        business_driver_path: str | Path | None = None,
     ) -> ValuationModel:
         """Construct the workflow from standardized history for offline/reproducible use."""
 
@@ -96,6 +102,11 @@ class ValuationModel:
             forecast_assumptions=forecast_assumptions,
             valuation_assumptions=valuation_assumptions,
             historical_checks=checks,
+            operating_model=(
+                load_business_driver_model(business_driver_path)
+                if business_driver_path is not None
+                else None
+            ),
         )
 
     @classmethod
@@ -106,6 +117,7 @@ class ValuationModel:
         forecast_assumptions_path: str | Path,
         valuation_assumptions_path: str | Path,
         tolerance: float = 1e-6,
+        business_driver_path: str | Path | None = None,
     ) -> ValuationModel:
         """Construct an offline workflow from a versioned standardized-history snapshot."""
 
@@ -135,6 +147,7 @@ class ValuationModel:
             forecast_assumptions_path=forecast_assumptions_path,
             valuation_assumptions_path=valuation_assumptions_path,
             tolerance=tolerance,
+            business_driver_path=business_driver_path,
         )
 
     @classmethod
@@ -146,6 +159,7 @@ class ValuationModel:
         valuation_assumptions_path: str | Path,
         account_mapping_path: str | Path = "config/account_mapping.yaml",
         tolerance: float = 1e-6,
+        business_driver_path: str | Path | None = None,
     ) -> ValuationModel:
         """Construct an offline workflow from canonical CSV or Excel history."""
 
@@ -159,13 +173,14 @@ class ValuationModel:
             forecast_assumptions_path=forecast_assumptions_path,
             valuation_assumptions_path=valuation_assumptions_path,
             tolerance=tolerance,
+            business_driver_path=business_driver_path,
         )
 
     def run(self) -> ModelResult:
         """Run linked statements, ratios, DCF, sensitivity, and structured checks."""
 
         state = self.opening_state.state
-        forecast = ThreeStatementModel().run(state, self.forecast_assumptions)
+        forecast = ThreeStatementModel(self.operating_model).run(state, self.forecast_assumptions)
         historical_ratios = calculate_historical_ratios(self.history)
         ratios = calculate_financial_ratios(forecast, state)
         bridge = self.valuation_assumptions.with_bridge(
@@ -183,11 +198,15 @@ class ValuationModel:
             wacc_values,
             growth_values,
         )
-        limitations = (
+        limitations: tuple[str, ...] = (
             "Standardized SEC tags may require company-specific overrides and analyst review.",
             "Residual other-assets, other-liabilities, and contributed-equity buckets are disclosed.",
             "Forecast assumptions and market inputs are researcher judgments, not investment advice.",
         )
+        if self.operating_model is not None:
+            limitations += (
+                "Business operating drivers are illustrative researcher inputs and are not company guidance.",
+            )
         return ModelResult(
             company_name=self.company.name,
             ticker=self.company.ticker,

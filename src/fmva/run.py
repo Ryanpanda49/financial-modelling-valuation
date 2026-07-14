@@ -32,6 +32,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--mapping", default="config/account_mapping.yaml")
     parser.add_argument(
+        "--business-drivers",
+        help="Optional company-specific bottom-up business-driver YAML.",
+    )
+    parser.add_argument(
         "--scenario-set",
         help="YAML file containing one or more named forecast/valuation cases.",
     )
@@ -62,6 +66,7 @@ def main(argv: list[str] | None = None) -> int:
                     history=base_model.history,
                     forecast_assumptions_path=scenario.forecast_assumptions_path,
                     valuation_assumptions_path=scenario.valuation_assumptions_path,
+                    business_driver_path=args.business_drivers,
                 )
             )
             payloads[scenario.slug] = _export_result(
@@ -87,6 +92,7 @@ def _build_model(
             args.history_json,
             forecast_assumptions_path=forecast_assumptions_path,
             valuation_assumptions_path=valuation_assumptions_path,
+            business_driver_path=args.business_drivers,
         )
     elif args.history_table:
         model = ValuationModel.from_tabular_history(
@@ -94,6 +100,7 @@ def _build_model(
             forecast_assumptions_path=forecast_assumptions_path,
             valuation_assumptions_path=valuation_assumptions_path,
             account_mapping_path=args.mapping,
+            business_driver_path=args.business_drivers,
         )
     else:
         if not args.config:
@@ -104,6 +111,7 @@ def _build_model(
             forecast_assumptions_path=forecast_assumptions_path,
             valuation_assumptions_path=valuation_assumptions_path,
             account_mapping_path=args.mapping,
+            business_driver_path=args.business_drivers,
         )
     return model
 

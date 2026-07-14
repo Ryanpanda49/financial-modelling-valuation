@@ -54,6 +54,8 @@ Implemented:
   the same downstream model checks as SEC history.
 - Named scenario-set orchestration that reuses one history dataset across base, upside, and
   downside assumption files.
+- Optional company-specific business-driver models feeding the same linked statements and DCF;
+  COST includes the first warehouse, comparable-sales, and membership implementation.
 - Valuation-bridge readiness and debt/interest consistency diagnostics before DCF construction.
 - Historical and forecast ratios displayed together with continuous blue trend charts.
 - Offline unit and integration tests.
@@ -106,6 +108,8 @@ The third COST regression case is documented in
 [validation note](docs/cost_compatibility_validation.md).
 Its [manual Excel fallback](docs/manual_data_input.md) and
 [scenario workflow](docs/scenario_analysis.md) are also reproducible offline.
+The [business-driver methodology](docs/business_driver_models.md) explains the bottom-up model and
+its control points.
 KO and MSFT are documented in their respective example directories and the combined
 [compatibility note](docs/ko_msft_compatibility_validation.md).
 

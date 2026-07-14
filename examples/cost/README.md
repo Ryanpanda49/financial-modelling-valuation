@@ -18,6 +18,21 @@ inputs are illustrative compatibility assumptions, not company guidance or inves
 Refresh the SEC history and replace every market assumption with dated research support before
 using the framework for current analysis.
 
+## Bottom-up warehouse and membership model
+
+```bash
+python -m fmva.run \
+  --history-json data/sample/cost_fy2021_2025_history.json \
+  --forecast-assumptions examples/cost/forecast_assumptions.yaml \
+  --valuation-assumptions examples/cost/valuation_assumptions.yaml \
+  --business-drivers examples/cost/business_drivers.yaml \
+  --output outputs/cost_bottom_up
+```
+
+This optional layer drives revenue from warehouses, comparable sales, new-store productivity,
+paid-member growth, and effective membership fees. It then runs through the same linked three
+statements and DCF. The operating KPI inputs are illustrative and are not company guidance.
+
 ## Manual Excel fallback
 
 ```bash

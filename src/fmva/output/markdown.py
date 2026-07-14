@@ -59,6 +59,8 @@ def export_markdown(data: ModelResultData, path: str | Path) -> Path:
 
 {assumptions_table}
 
+{_business_driver_markdown(data)}
+
 ## Projected Financials
 
 ### Income Statement
@@ -164,6 +166,16 @@ def _historical_markdown(data: ModelResultData) -> str:
     for name, table in data.historical.statements.items():
         sections.append(f"### {_display_name(name)}\n\n{table.to_markdown(floatfmt=',.2f')}")
     return "\n\n".join(sections)
+
+
+def _business_driver_markdown(data: ModelResultData) -> str:
+    if data.forecast.business_drivers is None:
+        return ""
+    return (
+        "## Business Driver Model\n\n"
+        "> Illustrative researcher inputs; not company guidance.\n\n"
+        + data.forecast.business_drivers.to_markdown(floatfmt=",.4f")
+    )
 
 
 def _historical_quality_markdown(data: ModelResultData) -> str:

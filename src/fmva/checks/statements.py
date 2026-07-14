@@ -65,6 +65,15 @@ class ForecastCheckSuite:
                     ),
                 ]
             )
+            if result.business_drivers is not None:
+                checks.append(
+                    self._check(
+                        "business_driver_revenue_tie",
+                        float(result.business_drivers.loc["total_revenue", year]),
+                        float(income["revenue"]),
+                        year,
+                    )
+                )
             converged = bool(debt["solver_converged"])
             checks.append(
                 CheckResult(

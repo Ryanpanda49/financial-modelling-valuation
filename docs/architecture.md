@@ -1,5 +1,9 @@
 # Architecture
 
+Company-specific operating logic implements the `OperatingModel` interface. See
+[`business_driver_models.md`](business_driver_models.md) for the optional COST warehouse and
+membership model; the default remains the generic top-down model.
+
 ## Product boundary
 
 The project is a semi-automated, research-oriented financial modelling and valuation framework for non-financial U.S. public companies. Automation handles retrieval, standardization, calculations, linked statements, valuation, checks, and exports. Research judgment remains explicit in forecast assumptions and company-specific operating logic.

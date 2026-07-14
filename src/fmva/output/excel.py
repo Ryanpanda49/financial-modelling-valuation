@@ -45,7 +45,7 @@ def export_excel(data: ModelResultData, path: str | Path) -> Path:
     target.parent.mkdir(parents=True, exist_ok=True)
     workbook = Workbook()
     workbook.remove(workbook.active)
-    sheet_names = (
+    sheet_names = [
         "Summary",
         "Sources_Audit",
         "Historical",
@@ -60,7 +60,9 @@ def export_excel(data: ModelResultData, path: str | Path) -> Path:
         "DCF",
         "Sensitivity",
         "Checks",
-    )
+    ]
+    if data.forecast.business_drivers is not None:
+        sheet_names.insert(4, "Business_Drivers")
     sheets = {name: workbook.create_sheet(name) for name in sheet_names}
     for sheet in sheets.values():
         _prepare_sheet(sheet)
@@ -68,6 +70,8 @@ def export_excel(data: ModelResultData, path: str | Path) -> Path:
     _write_sources(sheets["Sources_Audit"], data)
     _write_historical(sheets["Historical"], data)
     _write_assumptions(sheets["Assumptions"], data.assumption_summary)
+    if data.forecast.business_drivers is not None:
+        _write_business_drivers(sheets["Business_Drivers"], data.forecast.business_drivers)
     _write_financial_table(
         sheets["Income_Statement"], "Projected Income Statement", data.forecast.income_statement
     )
@@ -97,6 +101,54 @@ def export_excel(data: ModelResultData, path: str | Path) -> Path:
     workbook.calculation.calcMode = "auto"
     workbook.save(target)
     return target
+
+
+def _write_business_drivers(sheet: Worksheet, frame: pd.DataFrame) -> None:
+    """Write auditable company-specific drivers using blue input conventions."""
+
+    years = list(frame.columns)
+    _title(sheet, "Business Drivers — Warehouse & Membership Model", len(years) + 1)
+    sheet["A2"] = "Illustrative researcher inputs and calculated revenue bridge; not company guidance."
+    sheet["A2"].font = Font(italic=True, color=PRIMARY_BLUE)
+    _table_header(sheet, 4, ["Business driver", *years])
+    input_rows = {
+        "new_warehouses",
+        "comparable_sales_growth",
+        "new_warehouse_productivity",
+        "paid_member_growth",
+        "effective_fee_growth",
+        "executive_member_mix",
+        "renewal_rate",
+        "merchandise_cogs_as_pct_sales",
+    }
+    percentage_rows = {
+        "comparable_sales_growth",
+        "new_warehouse_productivity",
+        "paid_member_growth",
+        "effective_fee_growth",
+        "executive_member_mix",
+        "renewal_rate",
+        "merchandise_cogs_as_pct_sales",
+    }
+    total_rows = {"merchandise_revenue", "membership_fee_revenue", "total_revenue", "merchandise_cogs"}
+    for row, (label, values) in enumerate(frame.iterrows(), 5):
+        sheet.cell(row, 1, _display_label(str(label)))
+        for column, value in enumerate(values, 2):
+            cell = sheet.cell(row, column, _excel_value(value))
+            cell.fill = PatternFill("solid", fgColor=LIGHT_BLUE if label in input_rows else PALE_BLUE)
+            cell.font = Font(color=INPUT_BLUE if label in input_rows else BLACK)
+            cell.number_format = PERCENT_FORMAT if label in percentage_rows else FINANCIAL_FORMAT
+            cell.alignment = Alignment(horizontal="right")
+            if label in input_rows:
+                cell.comment = Comment("Researcher-controlled input from business-driver YAML.", "FMVA")
+        if label in total_rows:
+            for column in range(1, len(years) + 2):
+                sheet.cell(row, column).font = Font(
+                    bold=True,
+                    color=INPUT_BLUE if label in input_rows else BLACK,
+                )
+                sheet.cell(row, column).border = Border(top=THIN_BLUE)
+    _size_financial_sheet(sheet, len(years) + 1)
 
 
 def _prepare_sheet(sheet: Worksheet) -> None:

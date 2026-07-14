@@ -281,3 +281,13 @@ current_ratio:
 ```
 
 Definitions also specify average-balance usage, fiscal-day convention, sign expectations, and outlier thresholds.
+
+## Business driver schedule
+
+Company-specific operating models expose a rows-by-fiscal-years DataFrame alongside the standard
+financial schedules. Driver labels are explicit, units are encoded by documented conventions, and
+the schedule must include `total_revenue` so the check suite can reconcile it to the income
+statement. The first implementation uses warehouse counts, comparable sales, new-store
+productivity, merchandise revenue, paid-member equivalents, effective fees, membership-fee
+revenue, and merchandise COGS. These are researcher inputs or calculations, not SEC facts; they do
+not inherit SEC field-level provenance.

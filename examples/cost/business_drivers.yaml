@@ -1,0 +1,21 @@
+# Illustrative researcher inputs for the COST warehouse and membership model.
+# Opening revenue reconciles to pinned FY2025 SEC revenue. Operating KPIs are not sourced
+# from Company Facts and must be replaced with dated primary-source research before use.
+model_type: cost_membership_retail
+forecast_years: [2026, 2027, 2028, 2029, 2030]
+
+opening:
+  warehouses: 914
+  merchandise_revenue: 269925.0
+  paid_members_millions: 81.0
+  effective_fee_usd: 65.5555555556
+
+drivers:
+  new_warehouses: {2026: 30, 2027: 30, 2028: 28, 2029: 27, 2030: 25}
+  comparable_sales_growth: {2026: 0.050, 2027: 0.048, 2028: 0.045, 2029: 0.042, 2030: 0.040}
+  new_warehouse_productivity: 0.55
+  paid_member_growth: {2026: 0.060, 2027: 0.055, 2028: 0.050, 2029: 0.045, 2030: 0.040}
+  effective_fee_growth: {2026: 0.020, 2027: 0.020, 2028: 0.020, 2029: 0.020, 2030: 0.020}
+  executive_member_mix: {2026: 0.475, 2027: 0.480, 2028: 0.485, 2029: 0.490, 2030: 0.495}
+  renewal_rate: {2026: 0.930, 2027: 0.931, 2028: 0.932, 2029: 0.933, 2030: 0.934}
+  merchandise_cogs_as_pct_sales: {2026: 0.888, 2027: 0.887, 2028: 0.886, 2029: 0.885, 2030: 0.885}

@@ -17,6 +17,7 @@ from fmva.config.loader import load_config
 from fmva.data.account_mapping import AccountMap, AccountMapper
 from fmva.data.statement_builder import StatementBuilder
 from fmva.forecasting.assumptions import ForecastAssumptions
+from fmva.forecasting.business_drivers import load_business_driver_model
 from fmva.forecasting.three_statement import InitialFinancialState, ThreeStatementModel
 from fmva.logging import configure_logging
 from fmva.output import ModelResult
@@ -60,6 +61,7 @@ def build_parser() -> argparse.ArgumentParser:
     forecast.add_argument("--initial", required=True)
     forecast.add_argument("--assumptions", required=True)
     forecast.add_argument("--valuation")
+    forecast.add_argument("--business-drivers")
     forecast.add_argument("--output", help="Export Markdown, CSV tables, and PNG charts.")
     forecast.add_argument("--company-name", default="Manual Model")
     forecast.add_argument("--ticker", default="MANUAL")
@@ -76,7 +78,10 @@ def main(argv: list[str] | None = None) -> int:
         initial_payload = yaml.safe_load(Path(args.initial).read_text(encoding="utf-8"))
         initial = InitialFinancialState(**initial_payload)
         forecast_assumptions = ForecastAssumptions.from_yaml(args.assumptions)
-        forecast_result = ThreeStatementModel().run(initial, forecast_assumptions)
+        operating_model = (
+            load_business_driver_model(args.business_drivers) if args.business_drivers else None
+        )
+        forecast_result = ThreeStatementModel(operating_model).run(initial, forecast_assumptions)
         output = {
             "income_statement": forecast_result.income_statement.to_dict(),
             "balance_sheet": forecast_result.balance_sheet.to_dict(),
@@ -86,6 +91,8 @@ def main(argv: list[str] | None = None) -> int:
             "debt_schedule": forecast_result.debt_schedule.to_dict(),
             "checks": [asdict(item) for item in forecast_result.checks],
         }
+        if forecast_result.business_drivers is not None:
+            output["business_drivers"] = forecast_result.business_drivers.to_dict()
         ratios = calculate_financial_ratios(forecast_result, initial)
         output["financial_ratios"] = ratios.table.astype(object).where(
             ratios.table.notna(), None

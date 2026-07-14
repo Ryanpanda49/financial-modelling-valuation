@@ -17,7 +17,8 @@ The reference-model analysis and system design were approved. Phase 0 and the fi
 | Phase 3 — Analysis | Complete live for WMT | Historical and forecast growth, profitability, liquidity, leverage, efficiency, cash-flow ratios, warnings, and continuous trend charts are implemented. |
 | Phase 4 — Forecast engine | Complete live for WMT draft | FY2027–FY2031 linked schedules include operating normalization, working capital, PP&E, debt/interest, retained earnings, share issuance/repurchases, and passing checks without a plug. |
 | Phase 5 — DCF and sensitivity | Complete | UFCF, WACC, both terminal methods, equity bridge, implied price, structured checks, and WACC/g sensitivity are implemented. |
-| Phase 6 — Outputs and release readiness | Complete | `ModelResult`, fourteen-sheet blue Excel, Markdown, CSV tables, six PNG charts, five JSON fixtures, canonical CSV/XLSX fallback, scenario runs, privacy audit, and Python 3.11/3.12 CI. |
+| Phase 6 — Outputs and release readiness | Complete | `ModelResult`, fourteen-sheet blue Excel plus an optional Business Drivers sheet, Markdown, CSV tables, six PNG charts, five JSON fixtures, canonical CSV/XLSX fallback, scenario runs, privacy audit, and Python 3.11/3.12 CI. |
+| Phase 7 — Company-specific operating models | First implementation complete | Pluggable interface plus COST warehouse, comparable-sales, new-store productivity, membership, revenue bridge, COGS logic, checks, and outputs. |
 
 ## In scope
 
@@ -198,8 +199,8 @@ Exit criteria:
 
 ## Next gate
 
-Validate manual Excel ingestion and the three-case scenario workflow from a clean GitHub Actions
-run, then begin the extensible business-driver interface for v0.2.
+Validate the COST bottom-up workflow from a clean GitHub Actions run, then extend the interface with
+monthly store cohorts and a second company archetype such as product/segment or subscriber pricing.
 All committed valuation cases remain illustrative by design; live research
 configurations must replace them with dated, sourced market inputs using the enforced metadata
 schema.

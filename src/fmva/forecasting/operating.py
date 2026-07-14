@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol
 
+import pandas as pd
+
 from fmva.forecasting.assumptions import ForecastAssumptions
 
 
@@ -19,6 +21,7 @@ class OperatingForecast:
     research_and_development: float
     other_operating_income: float
     ebitda: float
+    drivers: dict[str, float] | None = None
 
 
 class OperatingModel(Protocol):
@@ -26,6 +29,13 @@ class OperatingModel(Protocol):
 
     def forecast(self, prior_revenue: float, year: int, assumptions: ForecastAssumptions) -> OperatingForecast:
         """Forecast one period's operating results."""
+
+    def driver_table(self) -> pd.DataFrame | None:
+        """Return an auditable rows-by-years driver schedule when available."""
+
+
+class BusinessDriverModel(OperatingModel, Protocol):
+    """Named extension contract for company or industry-specific operating models."""
 
 
 class TopDownOperatingModel:
@@ -50,3 +60,8 @@ class TopDownOperatingModel:
             other_operating_income=other_operating_income,
             ebitda=ebitda,
         )
+
+    def driver_table(self) -> pd.DataFrame | None:
+        """Top-down assumptions are already disclosed in the assumptions table."""
+
+        return None

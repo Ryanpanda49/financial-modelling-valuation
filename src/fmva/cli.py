@@ -26,6 +26,11 @@ from fmva.output.assumptions import summarize_assumptions
 from fmva.sec.client import SecClient
 from fmva.sec.company_facts import CompanyFacts
 from fmva.sec.company_registry import CompanyRegistry
+from fmva.sec.xbrl_dimensions import (
+    BusinessKpiMapping,
+    dimensional_facts_to_business_kpis,
+    parse_dimensional_facts,
+)
 from fmva.valuation.dcf import value_dcf
 from fmva.valuation.models import ValuationAssumptions
 from fmva.valuation.sensitivity import wacc_terminal_growth_sensitivity
@@ -58,6 +63,13 @@ def build_parser() -> argparse.ArgumentParser:
     history.add_argument("--years", type=int, default=None)
     history.add_argument("--mapping", default="config/account_mapping.yaml")
     history.add_argument("--config", required=True)
+    business_kpis = subcommands.add_parser(
+        "business-kpis",
+        help="Convert a filing-level XBRL instance into canonical dimensional KPIs.",
+    )
+    business_kpis.add_argument("--instance", required=True)
+    business_kpis.add_argument("--mapping", required=True)
+    business_kpis.add_argument("--output", help="Optional canonical CSV output path.")
     forecast = subcommands.add_parser("forecast", help="Run the linked synthetic/manual forecast engine.")
     forecast.add_argument("--initial", required=True)
     forecast.add_argument("--assumptions", required=True)
@@ -76,6 +88,18 @@ def main(argv: list[str] | None = None) -> int:
 
     configure_logging()
     args = build_parser().parse_args(argv)
+    if args.command == "business-kpis":
+        mapping = BusinessKpiMapping.from_yaml(args.mapping)
+        kpi_history = dimensional_facts_to_business_kpis(
+            parse_dimensional_facts(Path(args.instance)), mapping
+        )
+        frame = kpi_history.to_frame()
+        if args.output:
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            frame.to_csv(output_path, index=False)
+        print(json.dumps(frame.to_dict(orient="records"), indent=2, default=_json_default))
+        return 0
     if args.command == "forecast":
         initial_payload = yaml.safe_load(Path(args.initial).read_text(encoding="utf-8"))
         initial = InitialFinancialState(**initial_payload)

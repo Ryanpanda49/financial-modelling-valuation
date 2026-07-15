@@ -4,7 +4,11 @@ import pytest
 
 from fmva.exceptions import ConfigurationError
 from fmva.forecasting.assumptions import ForecastAssumptions
-from fmva.forecasting.business_drivers import CostMembershipRetailModel, SegmentRevenueModel
+from fmva.forecasting.business_drivers import (
+    CostMembershipRetailModel,
+    SegmentRevenueModel,
+    SubscriberArpuModel,
+)
 
 DRIVERS = Path("examples/cost/business_drivers.yaml")
 FORECAST = Path("examples/cost/forecast_assumptions.yaml")
@@ -54,3 +58,23 @@ def test_segment_model_rolls_each_business_and_consolidates_cogs() -> None:
     assert result.revenue == pytest.approx(drivers.loc[segment_revenue_rows, 2026].sum())
     assert result.cogs == pytest.approx(drivers.loc[segment_cogs_rows, 2026].sum())
     assert drivers.loc["intelligent_cloud_revenue_growth", 2026] == pytest.approx(0.21)
+
+
+def test_subscriber_arpu_model_reconciles_subscription_and_residual_revenue() -> None:
+    model = SubscriberArpuModel.from_yaml("examples/msft/subscriber_business_drivers.yaml")
+    assumptions = ForecastAssumptions.from_yaml("examples/msft/forecast_assumptions.yaml")
+
+    result = model.forecast(281724.0, 2026, assumptions)
+    drivers = model.driver_table()
+
+    assert drivers.loc["microsoft_365_consumer_subscribers_millions", 2026] == pytest.approx(
+        96.12
+    )
+    assert drivers.loc["microsoft_365_consumer_annual_arpu_usd", 2026] == pytest.approx(
+        105.0
+    )
+    assert result.revenue == pytest.approx(
+        drivers.loc["microsoft_365_consumer_revenue", 2026]
+        + drivers.loc["all_other_revenue_revenue", 2026]
+    )
+    assert result.cogs == pytest.approx(drivers.loc["total_business_cogs", 2026])

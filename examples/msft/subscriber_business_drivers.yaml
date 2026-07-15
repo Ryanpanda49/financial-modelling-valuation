@@ -1,0 +1,26 @@
+# Illustrative hybrid model: one disclosed subscriber KPI plus an explicit residual business.
+# FY2025 Microsoft 365 Consumer subscribers are source data; ARPU and all forecasts are
+# researcher assumptions. The residual prevents false precision where product revenue is
+# not separately disclosed and reconciles the opening bridge to consolidated revenue.
+model_type: subscriber_arpu
+forecast_years: [2026, 2027, 2028, 2029, 2030]
+
+opening:
+  subscriber_businesses:
+    microsoft_365_consumer:
+      subscribers_millions: 89.0
+      annual_arpu_usd: 100.0
+  residual_businesses:
+    all_other_revenue:
+      revenue: 272824.0
+
+drivers:
+  subscriber_growth:
+    microsoft_365_consumer: {2026: 0.080, 2027: 0.070, 2028: 0.060, 2029: 0.050, 2030: 0.040}
+  arpu_growth:
+    microsoft_365_consumer: {2026: 0.050, 2027: 0.050, 2028: 0.040, 2029: 0.040, 2030: 0.030}
+  residual_revenue_growth:
+    all_other_revenue: {2026: 0.145, 2027: 0.125, 2028: 0.110, 2029: 0.095, 2030: 0.085}
+  business_cogs_as_pct_revenue:
+    microsoft_365_consumer: {2026: 0.170, 2027: 0.168, 2028: 0.165, 2029: 0.162, 2030: 0.160}
+    all_other_revenue: {2026: 0.330, 2027: 0.325, 2028: 0.320, 2029: 0.315, 2030: 0.310}

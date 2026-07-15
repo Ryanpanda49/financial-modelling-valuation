@@ -121,3 +121,13 @@ class SecClient:
         """Return Company Facts for a zero-padded CIK."""
 
         return self.get_json(f"{self.DATA_BASE}/api/xbrl/companyfacts/CIK{int(cik):010d}.json")
+
+    def filing_directory(self, cik: str, accession_number: str) -> dict[str, Any]:
+        """Return the SEC Archives directory index for one filing accession."""
+
+        accession = accession_number.replace("-", "").strip()
+        if not accession.isdigit():
+            raise ValueError("Accession number must contain only digits and hyphens.")
+        return self.get_json(
+            f"{self.WWW_BASE}/Archives/edgar/data/{int(cik)}/{accession}/index.json"
+        )

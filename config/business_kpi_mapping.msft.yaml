@@ -1,0 +1,28 @@
+# Public FY2025 filing mapping used by the offline dimensional-XBRL example.
+source:
+  name: SEC EDGAR
+  url: https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/R105.htm
+  document: Microsoft FY2025 Form 10-K Note 18
+  filing_date: 2025-07-30
+  confidence: HIGH
+  restated_years: [2023, 2024]
+
+rules:
+  - metric: segment_revenue
+    concept: RevenueFromExternalCustomers
+    axis: OperatingSegmentsAxis
+    unit: USD millions
+    scale: 0.000001
+    members:
+      ProductivityAndBusinessProcessesMember: productivity_and_business_processes
+      IntelligentCloudMember: intelligent_cloud
+      MorePersonalComputingMember: more_personal_computing
+  - metric: segment_cogs
+    concept: CostOfRevenue
+    axis: OperatingSegmentsAxis
+    unit: USD millions
+    scale: 0.000001
+    members:
+      ProductivityAndBusinessProcessesMember: productivity_and_business_processes
+      IntelligentCloudMember: intelligent_cloud
+      MorePersonalComputingMember: more_personal_computing

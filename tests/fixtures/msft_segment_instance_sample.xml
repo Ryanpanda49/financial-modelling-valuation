@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xbrl xmlns="http://www.xbrl.org/2003/instance"
+      xmlns:xbrli="http://www.xbrl.org/2003/instance"
+      xmlns:xbrldi="http://xbrl.org/2006/xbrldi"
+      xmlns:iso4217="http://www.xbrl.org/2003/iso4217"
+      xmlns:us-gaap="http://fasb.org/us-gaap/2025"
+      xmlns:msft="http://www.microsoft.com/20250630">
+  <unit id="USD"><measure>iso4217:USD</measure></unit>
+
+  <context id="FY23_PBP"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:ProductivityAndBusinessProcessesMember</xbrldi:explicitMember></segment></entity><period><startDate>2022-07-01</startDate><endDate>2023-06-30</endDate></period></context>
+  <context id="FY23_IC"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:IntelligentCloudMember</xbrldi:explicitMember></segment></entity><period><startDate>2022-07-01</startDate><endDate>2023-06-30</endDate></period></context>
+  <context id="FY23_MPC"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:MorePersonalComputingMember</xbrldi:explicitMember></segment></entity><period><startDate>2022-07-01</startDate><endDate>2023-06-30</endDate></period></context>
+  <context id="FY24_PBP"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:ProductivityAndBusinessProcessesMember</xbrldi:explicitMember></segment></entity><period><startDate>2023-07-01</startDate><endDate>2024-06-30</endDate></period></context>
+  <context id="FY24_IC"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:IntelligentCloudMember</xbrldi:explicitMember></segment></entity><period><startDate>2023-07-01</startDate><endDate>2024-06-30</endDate></period></context>
+  <context id="FY24_MPC"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:MorePersonalComputingMember</xbrldi:explicitMember></segment></entity><period><startDate>2023-07-01</startDate><endDate>2024-06-30</endDate></period></context>
+  <context id="FY25_PBP"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:ProductivityAndBusinessProcessesMember</xbrldi:explicitMember></segment></entity><period><startDate>2024-07-01</startDate><endDate>2025-06-30</endDate></period></context>
+  <context id="FY25_IC"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:IntelligentCloudMember</xbrldi:explicitMember></segment></entity><period><startDate>2024-07-01</startDate><endDate>2025-06-30</endDate></period></context>
+  <context id="FY25_MPC"><entity><identifier scheme="http://www.sec.gov/CIK">0000789019</identifier><segment><xbrldi:explicitMember dimension="us-gaap:OperatingSegmentsAxis">msft:MorePersonalComputingMember</xbrldi:explicitMember></segment></entity><period><startDate>2024-07-01</startDate><endDate>2025-06-30</endDate></period></context>
+
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY23_PBP" unitRef="USD" decimals="-6">94151000000</us-gaap:RevenueFromExternalCustomers>
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY23_IC" unitRef="USD" decimals="-6">72944000000</us-gaap:RevenueFromExternalCustomers>
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY23_MPC" unitRef="USD" decimals="-6">44820000000</us-gaap:RevenueFromExternalCustomers>
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY24_PBP" unitRef="USD" decimals="-6">106820000000</us-gaap:RevenueFromExternalCustomers>
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY24_IC" unitRef="USD" decimals="-6">87464000000</us-gaap:RevenueFromExternalCustomers>
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY24_MPC" unitRef="USD" decimals="-6">50838000000</us-gaap:RevenueFromExternalCustomers>
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY25_PBP" unitRef="USD" decimals="-6">120810000000</us-gaap:RevenueFromExternalCustomers>
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY25_IC" unitRef="USD" decimals="-6">106265000000</us-gaap:RevenueFromExternalCustomers>
+  <us-gaap:RevenueFromExternalCustomers contextRef="FY25_MPC" unitRef="USD" decimals="-6">54649000000</us-gaap:RevenueFromExternalCustomers>
+
+  <us-gaap:CostOfRevenue contextRef="FY23_PBP" unitRef="USD" decimals="-6">17202000000</us-gaap:CostOfRevenue>
+  <us-gaap:CostOfRevenue contextRef="FY23_IC" unitRef="USD" decimals="-6">24109000000</us-gaap:CostOfRevenue>
+  <us-gaap:CostOfRevenue contextRef="FY23_MPC" unitRef="USD" decimals="-6">24552000000</us-gaap:CostOfRevenue>
+  <us-gaap:CostOfRevenue contextRef="FY24_PBP" unitRef="USD" decimals="-6">19611000000</us-gaap:CostOfRevenue>
+  <us-gaap:CostOfRevenue contextRef="FY24_IC" unitRef="USD" decimals="-6">29611000000</us-gaap:CostOfRevenue>
+  <us-gaap:CostOfRevenue contextRef="FY24_MPC" unitRef="USD" decimals="-6">24892000000</us-gaap:CostOfRevenue>
+  <us-gaap:CostOfRevenue contextRef="FY25_PBP" unitRef="USD" decimals="-6">22422000000</us-gaap:CostOfRevenue>
+  <us-gaap:CostOfRevenue contextRef="FY25_IC" unitRef="USD" decimals="-6">40171000000</us-gaap:CostOfRevenue>
+  <us-gaap:CostOfRevenue contextRef="FY25_MPC" unitRef="USD" decimals="-6">25238000000</us-gaap:CostOfRevenue>
+</xbrl>

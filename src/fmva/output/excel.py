@@ -128,7 +128,7 @@ def _write_business_drivers(sheet: Worksheet, frame: pd.DataFrame) -> None:
     input_rows.update(
         label
         for label in frame.index
-        if str(label).endswith(("_revenue_growth", "_cogs_as_pct_revenue"))
+        if str(label).endswith(("_growth", "_cogs_as_pct_revenue"))
     )
     percentage_rows = {
         "comparable_sales_growth",
@@ -142,7 +142,7 @@ def _write_business_drivers(sheet: Worksheet, frame: pd.DataFrame) -> None:
     percentage_rows.update(
         label
         for label in frame.index
-        if str(label).endswith(("_revenue_growth", "_cogs_as_pct_revenue"))
+        if str(label).endswith(("_growth", "_cogs_as_pct_revenue"))
     )
     percentage_rows.add("consolidated_gross_margin")
     total_rows = {

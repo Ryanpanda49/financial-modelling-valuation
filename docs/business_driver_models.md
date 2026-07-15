@@ -42,8 +42,7 @@ counting because their economic effects are reflected in member growth and effec
 - `business_driver_revenue_tie` proves that bottom-up total revenue equals forecast revenue.
 - All business-driver inputs are researcher judgments, not SEC Company Facts and not company
   guidance. The sample is deliberately labelled illustrative.
-- The interface is extensible to product, geography, subscriber, seat, capacity, or price-volume
-  models. Financial institutions remain outside the MVP.
+- Financial institutions remain outside the MVP.
 
 ## Generic segment revenue model
 
@@ -62,3 +61,36 @@ The accompanying historical KPI file contains FY2023–FY2025 segment revenue an
 including the prior-period restatement flag. The check suite proves that latest segment revenue and
 segment COGS each sum to the standardized consolidated statement. Forecast segment growth and cost
 ratios remain illustrative researcher inputs and are not Microsoft guidance.
+
+## Subscriber or seat × ARPU model
+
+`SubscriberArpuModel` forecasts one or more subscription businesses using:
+
+```text
+Subscribers_t = Subscribers_(t-1) × (1 + subscriber growth_t)
+Annual ARPU_t = Annual ARPU_(t-1) × (1 + ARPU growth_t)
+Subscription revenue_t (USD millions) = Subscribers_t (millions) × Annual ARPU_t (USD)
+```
+
+Businesses that cannot be supported by disclosed subscriber/seat data are placed in named
+`residual_businesses` with their own revenue growth and COGS paths. This is an explicit scope
+bridge, not a hidden plug: opening subscription plus residual revenue must reconcile to latest
+consolidated history within the standard tolerance. The MSFT example intentionally uses a large
+residual because a disclosed Microsoft 365 Consumer subscriber count does not make every Microsoft
+revenue stream subscriber-driven. Opening ARPU and every forecast driver remain researcher inputs.
+
+## Dimensional-XBRL ingestion
+
+The `fmva business-kpis` command converts a filing-level instance and YAML mapping into the same
+canonical source-aware KPI CSV accepted by the model:
+
+```bash
+python -m fmva.cli business-kpis \
+  --instance tests/fixtures/msft_segment_instance_sample.xml \
+  --mapping config/business_kpi_mapping.msft.yaml \
+  --output outputs/msft_segment_kpis.csv
+```
+
+The committed XML is a minimal public-data regression fixture, not the full filing. For live work,
+download the filing instance under the configured SEC rate-limit and cache policy, review selected
+concepts and members, and version only data suitable for public redistribution.

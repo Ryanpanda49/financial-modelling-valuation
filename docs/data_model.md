@@ -309,3 +309,15 @@ Business KPIs that do not belong in the canonical three statements use a separat
 Duplicate metric-dimension-year keys, invalid booleans, absent source URLs, and unsupported units or
 confidence labels fail loudly. Consolidated segment-revenue and segment-COGS totals are checked
 against standardized historical statements when present.
+
+### Filing-level dimensional XBRL adapter
+
+`DimensionalFact` retains the concept, numeric value, context ID, unit, decimals, period, and all
+explicit or typed dimensions from an instance document. `BusinessKpiMapping` then applies a
+declarative concept-axis-member mapping and unit scale. Only annual duration contexts of 330–380
+days are accepted by the current adapter; quarterly/YTD facts are deliberately excluded. Duplicate
+mapped metric-dimension-year keys fail instead of being silently resolved.
+
+The SEC filing directory locator excludes calculation, definition, label, presentation, report,
+and filing-summary XML files. Ambiguous instance candidates raise an error and require an explicit
+primary-document hint. The parser does not execute taxonomy formulas or external linkbases.

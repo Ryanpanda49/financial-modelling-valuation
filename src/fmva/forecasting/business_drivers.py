@@ -363,6 +363,205 @@ class SegmentRevenueModel:
         return forecasts, table
 
 
+@dataclass(frozen=True, slots=True)
+class SubscriberArpuAssumptions:
+    """Subscriber/seat and ARPU inputs with an explicit residual revenue bridge."""
+
+    years: tuple[int, ...]
+    subscriber_businesses: tuple[str, ...]
+    residual_businesses: tuple[str, ...]
+    opening_subscribers: dict[str, float]
+    opening_arpu: dict[str, float]
+    opening_residual_revenue: dict[str, float]
+    subscriber_growth: dict[str, dict[int, float]]
+    arpu_growth: dict[str, dict[int, float]]
+    residual_revenue_growth: dict[str, dict[int, float]]
+    business_cogs_as_pct_revenue: dict[str, dict[int, float]]
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> SubscriberArpuAssumptions:
+        source = Path(path)
+        try:
+            payload = yaml.safe_load(source.read_text(encoding="utf-8"))
+            if payload["model_type"] != "subscriber_arpu":
+                raise ConfigurationError(
+                    f"Unsupported business driver model: {payload['model_type']}"
+                )
+            years = tuple(int(year) for year in payload["forecast_years"])
+            subscriber_opening = payload["opening"]["subscriber_businesses"]
+            residual_opening = payload["opening"].get("residual_businesses", {})
+            subscriber_businesses = tuple(str(key) for key in subscriber_opening)
+            residual_businesses = tuple(str(key) for key in residual_opening)
+            all_businesses = subscriber_businesses + residual_businesses
+            drivers = payload["drivers"]
+            result = cls(
+                years=years,
+                subscriber_businesses=subscriber_businesses,
+                residual_businesses=residual_businesses,
+                opening_subscribers={
+                    business: float(subscriber_opening[business]["subscribers_millions"])
+                    for business in subscriber_businesses
+                },
+                opening_arpu={
+                    business: float(subscriber_opening[business]["annual_arpu_usd"])
+                    for business in subscriber_businesses
+                },
+                opening_residual_revenue={
+                    business: float(residual_opening[business]["revenue"])
+                    for business in residual_businesses
+                },
+                subscriber_growth=_nested_year_series(
+                    drivers, "subscriber_growth", subscriber_businesses, years
+                ),
+                arpu_growth=_nested_year_series(
+                    drivers, "arpu_growth", subscriber_businesses, years
+                ),
+                residual_revenue_growth=(
+                    _nested_year_series(
+                        drivers, "residual_revenue_growth", residual_businesses, years
+                    )
+                    if residual_businesses
+                    else {}
+                ),
+                business_cogs_as_pct_revenue=_nested_year_series(
+                    drivers, "business_cogs_as_pct_revenue", all_businesses, years
+                ),
+            )
+        except ConfigurationError:
+            raise
+        except (OSError, yaml.YAMLError, KeyError, TypeError, ValueError) as exc:
+            raise ConfigurationError(f"Invalid subscriber/ARPU assumptions: {source}") from exc
+        result.validate()
+        return result
+
+    def validate(self) -> None:
+        if not self.years or tuple(sorted(set(self.years))) != self.years:
+            raise ConfigurationError("Subscriber model forecast_years must be unique and increasing.")
+        businesses = self.subscriber_businesses + self.residual_businesses
+        if not self.subscriber_businesses or len(set(businesses)) != len(businesses):
+            raise ConfigurationError("Subscriber model requires unique business keys and subscribers.")
+        if any(
+            not key.replace("_", "").isalnum() or key.lower() != key for key in businesses
+        ):
+            raise ConfigurationError("Subscriber model keys must use lowercase letters, numbers, and underscores.")
+        if any(value <= 0 for value in self.opening_subscribers.values()):
+            raise ConfigurationError("Opening subscriber or seat counts must be positive.")
+        if any(value <= 0 for value in self.opening_arpu.values()):
+            raise ConfigurationError("Opening ARPU values must be positive.")
+        if any(value < 0 for value in self.opening_residual_revenue.values()):
+            raise ConfigurationError("Opening residual revenue cannot be negative.")
+        for growth in (
+            *self.subscriber_growth.values(),
+            *self.arpu_growth.values(),
+            *self.residual_revenue_growth.values(),
+        ):
+            if set(growth) != set(self.years) or any(value <= -1 for value in growth.values()):
+                raise ConfigurationError("Subscriber-model growth must cover all years and exceed -100%.")
+        for ratios in self.business_cogs_as_pct_revenue.values():
+            if set(ratios) != set(self.years) or any(
+                not 0 <= value <= 1 for value in ratios.values()
+            ):
+                raise ConfigurationError("Business COGS ratios must be between 0% and 100%.")
+
+
+class SubscriberArpuModel:
+    """Bottom-up subscription model with separately disclosed residual businesses."""
+
+    def __init__(self, inputs: SubscriberArpuAssumptions) -> None:
+        self.inputs = inputs
+        self._forecasts, self._table = self._build()
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> SubscriberArpuModel:
+        return cls(SubscriberArpuAssumptions.from_yaml(path))
+
+    def forecast(
+        self,
+        prior_revenue: float,
+        year: int,
+        assumptions: ForecastAssumptions,
+    ) -> OperatingForecast:
+        if year not in self._forecasts:
+            raise ConfigurationError(f"Subscriber model does not cover FY{year}.")
+        if year == self.inputs.years[0]:
+            configured = sum(
+                self.inputs.opening_subscribers[business]
+                * self.inputs.opening_arpu[business]
+                for business in self.inputs.subscriber_businesses
+            ) + sum(self.inputs.opening_residual_revenue.values())
+            tolerance = max(1.0, abs(prior_revenue) * 0.001)
+            if abs(configured - prior_revenue) > tolerance:
+                raise ConfigurationError(
+                    "Opening subscriber/ARPU revenue does not reconcile to historical revenue: "
+                    f"configured={configured:.2f}, historical={prior_revenue:.2f}."
+                )
+        driver = self._forecasts[year]
+        revenue = driver["total_revenue"]
+        cogs = driver["total_business_cogs"]
+        sga = revenue * assumptions.sga_as_pct_revenue[year]
+        research_and_development = revenue * assumptions.rd_as_pct_revenue[year]
+        other_operating_income = revenue * assumptions.other_operating_income_as_pct_revenue[year]
+        gross_profit = revenue - cogs
+        return OperatingForecast(
+            revenue=revenue,
+            cogs=cogs,
+            gross_profit=gross_profit,
+            selling_general_admin=sga,
+            research_and_development=research_and_development,
+            other_operating_income=other_operating_income,
+            ebitda=gross_profit - sga - research_and_development + other_operating_income,
+            drivers=driver,
+        )
+
+    def driver_table(self) -> pd.DataFrame:
+        return self._table.copy()
+
+    def _build(self) -> tuple[dict[int, dict[str, float]], pd.DataFrame]:
+        subscribers = self.inputs.opening_subscribers.copy()
+        arpu = self.inputs.opening_arpu.copy()
+        residual_revenue = self.inputs.opening_residual_revenue.copy()
+        forecasts: dict[int, dict[str, float]] = {}
+        for year in self.inputs.years:
+            driver: dict[str, float] = {}
+            total_revenue = 0.0
+            total_cogs = 0.0
+            for business in self.inputs.subscriber_businesses:
+                subscribers[business] *= 1.0 + self.inputs.subscriber_growth[business][year]
+                arpu[business] *= 1.0 + self.inputs.arpu_growth[business][year]
+                revenue = subscribers[business] * arpu[business]
+                cogs_ratio = self.inputs.business_cogs_as_pct_revenue[business][year]
+                cogs = revenue * cogs_ratio
+                driver[f"{business}_subscriber_growth"] = self.inputs.subscriber_growth[business][year]
+                driver[f"{business}_subscribers_millions"] = subscribers[business]
+                driver[f"{business}_arpu_growth"] = self.inputs.arpu_growth[business][year]
+                driver[f"{business}_annual_arpu_usd"] = arpu[business]
+                driver[f"{business}_revenue"] = revenue
+                driver[f"{business}_cogs_as_pct_revenue"] = cogs_ratio
+                driver[f"{business}_cogs"] = cogs
+                total_revenue += revenue
+                total_cogs += cogs
+            for business in self.inputs.residual_businesses:
+                growth = self.inputs.residual_revenue_growth[business][year]
+                residual_revenue[business] *= 1.0 + growth
+                revenue = residual_revenue[business]
+                cogs_ratio = self.inputs.business_cogs_as_pct_revenue[business][year]
+                cogs = revenue * cogs_ratio
+                driver[f"{business}_revenue_growth"] = growth
+                driver[f"{business}_revenue"] = revenue
+                driver[f"{business}_cogs_as_pct_revenue"] = cogs_ratio
+                driver[f"{business}_cogs"] = cogs
+                total_revenue += revenue
+                total_cogs += cogs
+            driver["total_revenue"] = total_revenue
+            driver["total_business_cogs"] = total_cogs
+            driver["consolidated_gross_margin"] = 1.0 - total_cogs / total_revenue
+            forecasts[year] = driver
+        table = pd.DataFrame(forecasts)
+        table.columns.name = "fiscal_year"
+        table.index.name = "business_driver"
+        return forecasts, table
+
+
 def load_business_driver_model(path: str | Path) -> BusinessDriverModel:
     """Factory reserved for additional company and industry model types."""
 
@@ -375,6 +574,8 @@ def load_business_driver_model(path: str | Path) -> BusinessDriverModel:
         return CostMembershipRetailModel.from_yaml(path)
     if model_type == "segment_revenue":
         return SegmentRevenueModel.from_yaml(path)
+    if model_type == "subscriber_arpu":
+        return SubscriberArpuModel.from_yaml(path)
     raise ConfigurationError(f"Unsupported business driver model: {model_type}")
 
 

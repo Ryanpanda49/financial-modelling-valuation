@@ -5,6 +5,9 @@ Company-specific operating logic implements the `OperatingModel` interface. See
 membership model; the default remains the generic top-down model.
 Source-aware business KPIs remain separate from canonical financial accounts and feed optional
 company operating models through an auditable long-form adapter.
+Filing-level XBRL instance documents are parsed separately from Company Facts when explicit or
+typed dimensions are required. This path retains contexts, axes, members, units, periods, and
+source metadata before declarative YAML rules map facts into the business-KPI contract.
 
 ## Product boundary
 
@@ -32,12 +35,16 @@ flowchart TD
     A["Ticker or CIK"] --> B["Company Registry"]
     B --> C["SEC Client + cache + rate limiter"]
     C --> D["Raw Company Facts / submissions / filing metadata"]
+    C --> DX["Filing directory + XBRL instance"]
+    DX --> DY["Dimensional facts + contexts"]
+    DY --> DZ["Business KPI mapping + provenance"]
     D --> E["Fact normalization and period classification"]
     E --> F["Canonical account mapping + provenance"]
     F --> G["Historical statement builder"]
     G --> H["Historical validation and quality report"]
     G --> V["Opening-state adapter + residual disclosure"]
     V --> I["Assumption resolver"]
+    DZ --> J
     I --> J["Operating model"]
     J --> K["Income statement forecast"]
     K --> L["Working capital schedule"]
@@ -98,12 +105,13 @@ financial-modelling-valuation/
 │   │   ├── cache.py
 │   │   ├── rate_limit.py
 │   │   ├── company_registry.py
-│   │   └── filing_selector.py
+│   │   └── xbrl_dimensions.py
 │   ├── data/
 │   │   ├── models.py
 │   │   ├── period_classifier.py
 │   │   ├── fact_normalizer.py
 │   │   ├── account_mapper.py
+│   │   ├── business_kpis.py
 │   │   ├── statement_builder.py
 │   │   └── quality.py
 │   ├── forecasting/

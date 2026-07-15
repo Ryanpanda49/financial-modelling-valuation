@@ -85,3 +85,25 @@ def test_msft_segment_model_and_sourced_kpis_flow_to_outputs(tmp_path: Path) -> 
     )
     assert "## Historical Business KPIs" in report.read_text(encoding="utf-8")
     assert "business_kpi_history" in tables
+
+
+def test_msft_subscriber_arpu_archetype_runs_linked_model() -> None:
+    model = ValuationModel.from_history_json(
+        "data/sample/msft_fy2021_2025_history.json",
+        forecast_assumptions_path="examples/msft/forecast_assumptions.yaml",
+        valuation_assumptions_path="examples/msft/valuation_assumptions.yaml",
+        business_driver_path="examples/msft/subscriber_business_drivers.yaml",
+    )
+
+    result = model.run()
+    drivers = result.forecast.business_drivers
+
+    assert drivers is not None
+    assert drivers.loc["microsoft_365_consumer_subscribers_millions", 2026] == pytest.approx(
+        96.12
+    )
+    assert result.forecast.income_statement.loc["revenue", 2026] == pytest.approx(
+        drivers.loc["total_revenue", 2026]
+    )
+    assert all(check.status.value == "PASS" for check in result.forecast.checks)
+    assert all(check.status.value == "PASS" for check in result.dcf.checks)

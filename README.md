@@ -59,6 +59,8 @@ Implemented:
   COST includes warehouse/membership logic and MSFT includes a sourced segment model.
 - Source-aware historical business KPI imports with direct/recast flags, evidence URLs, duplicate
   protection, and consolidated statement tie-outs.
+- Filing-level XBRL context and dimension parsing with declarative concept-axis-member KPI mappings.
+- Subscriber/seat × ARPU operating archetype with an explicit, reconciled residual business.
 - Valuation-bridge readiness and debt/interest consistency diagnostics before DCF construction.
 - Historical and forecast ratios displayed together with continuous blue trend charts.
 - Offline unit and integration tests.
@@ -122,6 +124,10 @@ KO and MSFT are documented in their respective example directories and the combi
 python -m fmva.cli company WMT --config config/model_config.yaml
 python -m fmva.cli facts WMT --concept Revenues --config config/model_config.yaml
 python -m fmva.cli history WMT --years 5 --config config/model_config.yaml
+python -m fmva.cli business-kpis \
+  --instance tests/fixtures/msft_segment_instance_sample.xml \
+  --mapping config/business_kpi_mapping.msft.yaml \
+  --output outputs/msft_segment_kpis.csv
 ```
 
 The linked forecast engine can be audited without network access:

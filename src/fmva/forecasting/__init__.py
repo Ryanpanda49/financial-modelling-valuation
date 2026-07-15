@@ -6,6 +6,8 @@ from fmva.forecasting.business_drivers import (
     CostMembershipRetailModel,
     SegmentRevenueAssumptions,
     SegmentRevenueModel,
+    SubscriberArpuAssumptions,
+    SubscriberArpuModel,
     load_business_driver_model,
 )
 from fmva.forecasting.operating import BusinessDriverModel, OperatingModel, TopDownOperatingModel
@@ -25,6 +27,8 @@ __all__ = [
     "OperatingModel",
     "SegmentRevenueAssumptions",
     "SegmentRevenueModel",
+    "SubscriberArpuAssumptions",
+    "SubscriberArpuModel",
     "ThreeStatementModel",
     "TopDownOperatingModel",
     "load_business_driver_model",

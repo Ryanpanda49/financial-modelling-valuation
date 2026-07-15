@@ -64,6 +64,7 @@ Implemented:
   source override for live dimensional KPI extraction.
 - Subscriber/seat × ARPU operating archetype with an explicit, reconciled residual business.
 - Out-of-sample business-driver backtest metrics with Top-down baseline comparison.
+- Explainable business-model readiness ranking and researcher-confirmed YAML draft initialization.
 - Valuation-bridge readiness and debt/interest consistency diagnostics before DCF construction.
 - Historical and forecast ratios displayed together with continuous blue trend charts.
 - Offline unit and integration tests.
@@ -135,6 +136,15 @@ python -m fmva.cli backtest \
   --input research/frozen_forecasts.csv \
   --summary-output outputs/backtest_summary.csv \
   --errors-output outputs/backtest_errors.csv
+python -m fmva.cli recommend-business-model \
+  --history-json data/sample/msft_fy2021_2025_history.json \
+  --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv
+python -m fmva.cli draft-business-model \
+  --history-json data/sample/msft_fy2021_2025_history.json \
+  --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv \
+  --model-type segment_revenue \
+  --forecast-years 2026 2027 2028 2029 2030 \
+  --output outputs/msft_segment_draft.yaml
 ```
 
 The linked forecast engine can be audited without network access:
@@ -209,6 +219,7 @@ validation.
 - [Manual CSV and Excel input](docs/manual_data_input.md)
 - [Scenario analysis](docs/scenario_analysis.md)
 - [Business-driver backtesting](docs/business_driver_backtesting.md)
+- [Business-model recommendation and draft initialization](docs/business_model_recommendation.md)
 - [MSFT live dimensional XBRL validation](docs/msft_live_dimensional_xbrl_validation.md)
 
 ## Data and privacy

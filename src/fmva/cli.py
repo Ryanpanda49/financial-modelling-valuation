@@ -17,9 +17,13 @@ from fmva.checks.historical import HistoricalCheckSuite
 from fmva.config.loader import load_config
 from fmva.data.account_mapping import AccountMap, AccountMapper
 from fmva.data.business_kpis import BusinessKpiHistory
-from fmva.data.statement_builder import StatementBuilder
+from fmva.data.statement_builder import HistoricalStatements, StatementBuilder
 from fmva.forecasting.assumptions import ForecastAssumptions
 from fmva.forecasting.business_drivers import load_business_driver_model
+from fmva.forecasting.business_model_selection import (
+    BusinessModelRecommender,
+    build_business_driver_draft,
+)
 from fmva.forecasting.three_statement import InitialFinancialState, ThreeStatementModel
 from fmva.logging import configure_logging
 from fmva.output import ModelResult
@@ -86,6 +90,26 @@ def build_parser() -> argparse.ArgumentParser:
     backtest.add_argument("--input", required=True, help="Canonical backtest observation CSV.")
     backtest.add_argument("--summary-output", help="Optional grouped accuracy CSV.")
     backtest.add_argument("--errors-output", help="Optional observation-level error CSV.")
+    recommend = subcommands.add_parser(
+        "recommend-business-model",
+        help="Rank model archetypes from history and KPI coverage; never auto-select.",
+    )
+    recommend.add_argument("--history-json", required=True)
+    recommend.add_argument("--business-kpi-history")
+    recommend.add_argument("--output", help="Optional candidate report CSV.")
+    draft_command = subcommands.add_parser(
+        "draft-business-model",
+        help="Generate a researcher-reviewable Business Driver YAML after explicit model choice.",
+    )
+    draft_command.add_argument("--history-json", required=True)
+    draft_command.add_argument("--business-kpi-history", required=True)
+    draft_command.add_argument(
+        "--model-type",
+        required=True,
+        choices=("segment_revenue", "subscriber_arpu", "cost_membership_retail"),
+    )
+    draft_command.add_argument("--forecast-years", type=int, nargs="+", required=True)
+    draft_command.add_argument("--output", required=True)
     forecast = subcommands.add_parser("forecast", help="Run the linked synthetic/manual forecast engine.")
     forecast.add_argument("--initial", required=True)
     forecast.add_argument("--assumptions", required=True)
@@ -104,6 +128,52 @@ def main(argv: list[str] | None = None) -> int:
 
     configure_logging()
     args = build_parser().parse_args(argv)
+    if args.command == "recommend-business-model":
+        history = HistoricalStatements.read_json(args.history_json)
+        kpis = (
+            BusinessKpiHistory.from_tabular(args.business_kpi_history)
+            if args.business_kpi_history
+            else None
+        )
+        recommendation = BusinessModelRecommender().recommend(history, kpis)
+        frame = recommendation.to_frame()
+        if args.output:
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            frame.to_csv(output_path, index=False)
+        print(
+            json.dumps(
+                {
+                    "selection_policy": recommendation.selection_policy,
+                    "candidates": frame.to_dict(orient="records"),
+                },
+                indent=2,
+                default=_json_default,
+            )
+        )
+        return 0
+    if args.command == "draft-business-model":
+        history = HistoricalStatements.read_json(args.history_json)
+        kpis = BusinessKpiHistory.from_tabular(args.business_kpi_history)
+        driver_draft = build_business_driver_draft(
+            args.model_type,
+            history,
+            kpis,
+            tuple(args.forecast_years),
+        )
+        output_path = driver_draft.write_yaml(args.output)
+        print(
+            json.dumps(
+                {
+                    "model_type": driver_draft.model_type,
+                    "status": "RESEARCHER_REVIEW_REQUIRED",
+                    "output": str(output_path),
+                    "warnings": driver_draft.warnings,
+                },
+                indent=2,
+            )
+        )
+        return 0
     if args.command == "backtest":
         backtest_report = BacktestReport.from_csv(args.input)
         if args.summary_output:

@@ -85,6 +85,29 @@ jobs:
           --business-drivers examples/msft/business_drivers.yaml
           --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv
           --output "${{ runner.temp }}/msft-segment"
+      - name: Rank MSFT business model candidates offline
+        run: >-
+          python -m fmva.cli recommend-business-model
+          --history-json data/sample/msft_fy2021_2025_history.json
+          --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv
+          --output "${{ runner.temp }}/msft-model-candidates.csv"
+      - name: Generate researcher-reviewable MSFT segment draft
+        run: >-
+          python -m fmva.cli draft-business-model
+          --history-json data/sample/msft_fy2021_2025_history.json
+          --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv
+          --model-type segment_revenue
+          --forecast-years 2026 2027 2028 2029 2030
+          --output "${{ runner.temp }}/msft-segment-draft.yaml"
+      - name: Run generated MSFT segment draft through valuation
+        run: >-
+          python -m fmva.run
+          --history-json data/sample/msft_fy2021_2025_history.json
+          --forecast-assumptions examples/msft/forecast_assumptions.yaml
+          --valuation-assumptions examples/msft/valuation_assumptions.yaml
+          --business-drivers "${{ runner.temp }}/msft-segment-draft.yaml"
+          --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv
+          --output "${{ runner.temp }}/msft-generated-segment"
       - name: Map dimensional XBRL business KPIs offline
         run: >-
           python -m fmva.cli business-kpis

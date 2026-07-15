@@ -106,3 +106,11 @@ Business-driver revenue tie-outs and balanced statements prove internal correctn
 forecast accuracy uses frozen out-of-sample observations and the metrics documented in
 [`business_driver_backtesting.md`](business_driver_backtesting.md). Every Bottom-up model should be
 compared with a simpler Top-down baseline at the same origin date and horizon.
+
+## Model recommendation and initialization
+
+The optional recommender measures whether disclosed history is sufficient for each existing
+archetype. It reports evidence and gaps but never changes the operating model automatically. After
+the researcher explicitly chooses a model type, the initializer can generate a centralized,
+loadable YAML draft from historical KPI run rates. All drafts remain review-required and are
+documented in [`business_model_recommendation.md`](business_model_recommendation.md).

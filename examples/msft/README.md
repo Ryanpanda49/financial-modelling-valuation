@@ -53,6 +53,25 @@ python -m fmva.cli business-kpis \
 The FY2025 live validation produced the same 18 segment revenue/COGS values as the reviewed sample.
 See [the validation note](../../docs/msft_live_dimensional_xbrl_validation.md).
 
+## Explainable model recommendation
+
+The segment KPI file ranks `segment_revenue` as `READY`, while Top-down remains the baseline. The
+recommender does not activate the model. Generate a draft only after explicitly confirming the
+model type:
+
+```bash
+python -m fmva.cli recommend-business-model \
+  --history-json data/sample/msft_fy2021_2025_history.json \
+  --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv
+
+python -m fmva.cli draft-business-model \
+  --history-json data/sample/msft_fy2021_2025_history.json \
+  --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv \
+  --model-type segment_revenue \
+  --forecast-years 2026 2027 2028 2029 2030 \
+  --output outputs/msft_segment_draft.yaml
+```
+
 ## Subscriber/ARPU archetype
 
 ```bash

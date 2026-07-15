@@ -334,3 +334,11 @@ key is model, metric, origin year, and target year. Actual and predicted values 
 baseline prediction and prior actual are optional. Target years must follow origin years, duplicate
 keys fail, and non-finite values are rejected. See
 [`business_driver_backtesting.md`](business_driver_backtesting.md).
+
+## Business model recommendation contract
+
+`BusinessModelCandidate` contains model type, bounded data-readiness score, readiness label,
+evidence, gaps, and `requires_researcher_confirmation=True`. A recommendation is a ranked tuple and
+has no selected-model field. `BusinessDriverDraft` contains a loadable YAML payload and explicit
+warnings; its metadata status is always `RESEARCHER_REVIEW_REQUIRED`. See
+[`business_model_recommendation.md`](business_model_recommendation.md).

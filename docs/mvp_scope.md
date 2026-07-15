@@ -20,6 +20,7 @@ The reference-model analysis and system design were approved. Phase 0 and the fi
 | Phase 6 — Outputs and release readiness | Complete | `ModelResult`, fourteen-sheet blue Excel plus an optional Business Drivers sheet, Markdown, CSV tables, six PNG charts, five JSON fixtures, canonical CSV/XLSX fallback, scenario runs, privacy audit, and Python 3.11/3.12 CI. |
 | Phase 7 — Company-specific operating models | Three archetypes complete | COST warehouse/membership, generic segment, subscriber/seat × ARPU with disclosed residual, live dimensional-XBRL KPI adapter, tie-outs, and outputs. |
 | Phase 8 — Forecast evaluation | Infrastructure complete; research panel pending | Frozen observation contract, horizon metrics, direction accuracy, and Top-down baseline comparison. |
+| Phase 9 — Explainable model recommendation | Complete for current archetypes | Evidence/gap scoring, mandatory researcher confirmation, and loadable Segment, Subscriber/ARPU, and Store/Membership drafts. |
 
 ## In scope
 
@@ -200,8 +201,8 @@ Exit criteria:
 
 ## Next gate
 
-Build a dated multi-company frozen-forecast panel, validate filing-instance discovery against
-additional issuers, and add company-specific mapping packs before monthly store cohorts.
+Build a dated multi-company frozen-forecast panel, add company-specific KPI mapping packs, and
+measure whether generated Bottom-up drafts beat the Top-down baseline before monthly cohorts.
 All committed valuation cases remain illustrative by design; live research
 configurations must replace them with dated, sourced market inputs using the enforced metadata
 schema.

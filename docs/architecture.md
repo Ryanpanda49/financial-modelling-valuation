@@ -38,12 +38,16 @@ flowchart TD
     C --> DX["10-K selector + filing directory + cached XBRL instance"]
     DX --> DY["Dimensional facts + contexts"]
     DY --> DZ["Business KPI mapping + provenance"]
+    DZ --> REC["Model readiness candidates + evidence + gaps"]
+    REC --> CONF["Researcher confirmation"]
+    CONF --> DRAFT["Review-required Business Driver YAML draft"]
     D --> E["Fact normalization and period classification"]
     E --> F["Canonical account mapping + provenance"]
     F --> G["Historical statement builder"]
     G --> H["Historical validation and quality report"]
     G --> V["Opening-state adapter + residual disclosure"]
     V --> I["Assumption resolver"]
+    DRAFT --> J
     DZ --> J
     I --> J["Operating model"]
     J --> K["Income statement forecast"]

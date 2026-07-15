@@ -18,7 +18,8 @@ The reference-model analysis and system design were approved. Phase 0 and the fi
 | Phase 4 — Forecast engine | Complete live for WMT draft | FY2027–FY2031 linked schedules include operating normalization, working capital, PP&E, debt/interest, retained earnings, share issuance/repurchases, and passing checks without a plug. |
 | Phase 5 — DCF and sensitivity | Complete | UFCF, WACC, both terminal methods, equity bridge, implied price, structured checks, and WACC/g sensitivity are implemented. |
 | Phase 6 — Outputs and release readiness | Complete | `ModelResult`, fourteen-sheet blue Excel plus an optional Business Drivers sheet, Markdown, CSV tables, six PNG charts, five JSON fixtures, canonical CSV/XLSX fallback, scenario runs, privacy audit, and Python 3.11/3.12 CI. |
-| Phase 7 — Company-specific operating models | Three archetypes complete | COST warehouse/membership, generic segment, subscriber/seat × ARPU with disclosed residual, dimensional-XBRL KPI adapter, tie-outs, and outputs. |
+| Phase 7 — Company-specific operating models | Three archetypes complete | COST warehouse/membership, generic segment, subscriber/seat × ARPU with disclosed residual, live dimensional-XBRL KPI adapter, tie-outs, and outputs. |
+| Phase 8 — Forecast evaluation | Infrastructure complete; research panel pending | Frozen observation contract, horizon metrics, direction accuracy, and Top-down baseline comparison. |
 
 ## In scope
 
@@ -199,8 +200,8 @@ Exit criteria:
 
 ## Next gate
 
-Validate live filing-instance discovery against additional issuers, add concept aliases and
-company-specific mapping packs, then extend store models with monthly opening cohorts.
+Build a dated multi-company frozen-forecast panel, validate filing-instance discovery against
+additional issuers, and add company-specific mapping packs before monthly store cohorts.
 All committed valuation cases remain illustrative by design; live research
 configurations must replace them with dated, sourced market inputs using the enforced metadata
 schema.

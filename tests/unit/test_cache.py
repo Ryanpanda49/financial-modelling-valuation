@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from fmva.sec.cache import JsonDiskCache
+from fmva.sec.cache import JsonDiskCache, TextDiskCache
 
 
 def test_cache_round_trip(tmp_path: Path) -> None:
@@ -15,3 +15,13 @@ def test_zero_ttl_does_not_expire(tmp_path: Path) -> None:
     cache = JsonDiskCache(tmp_path, ttl_seconds=0)
     cache.put("https://example.test/data", {"ok": True})
     assert cache.get("https://example.test/data") is not None
+
+
+def test_text_cache_round_trip(tmp_path: Path) -> None:
+    cache = TextDiskCache(tmp_path, ttl_seconds=60)
+    cache.put("https://example.test/instance.xml", "<xbrl>public filing</xbrl>")
+
+    entry = cache.get("https://example.test/instance.xml")
+
+    assert entry is not None
+    assert entry.payload == "<xbrl>public filing</xbrl>"

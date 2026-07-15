@@ -16,6 +16,10 @@ def test_business_kpi_import_retains_sources_and_pivots_metrics() -> None:
     assert revenue.loc["intelligent_cloud", 2025] == 106265
     assert history.records[0].source_url.startswith("https://www.sec.gov/")
     assert set(history.to_frame()["confidence"]) == {"HIGH"}
+    quality = history.quality_summary()
+    assert quality["record_count"] == 18
+    assert quality["source_complete_count"] == 18
+    assert quality["restated_count"] == 12
 
 
 def test_business_kpi_import_rejects_duplicate_metric_dimension_year(tmp_path: Path) -> None:

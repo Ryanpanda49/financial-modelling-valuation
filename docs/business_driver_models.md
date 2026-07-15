@@ -94,3 +94,15 @@ python -m fmva.cli business-kpis \
 The committed XML is a minimal public-data regression fixture, not the full filing. For live work,
 download the filing instance under the configured SEC rate-limit and cache policy, review selected
 concepts and members, and version only data suitable for public redistribution.
+
+For a live filing, replace `--instance` with `--identifier MSFT --config
+config/model_config.yaml`. The latest eligible 10-K is selected unless an explicit accession is
+provided. Live metadata replaces the example source identity, while mapping aliases and units
+remain researcher-reviewed configuration.
+
+## Accuracy evaluation
+
+Business-driver revenue tie-outs and balanced statements prove internal correctness only. Formal
+forecast accuracy uses frozen out-of-sample observations and the metrics documented in
+[`business_driver_backtesting.md`](business_driver_backtesting.md). Every Bottom-up model should be
+compared with a simpler Top-down baseline at the same origin date and horizon.

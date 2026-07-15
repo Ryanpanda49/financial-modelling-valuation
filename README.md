@@ -60,7 +60,10 @@ Implemented:
 - Source-aware historical business KPI imports with direct/recast flags, evidence URLs, duplicate
   protection, and consolidated statement tie-outs.
 - Filing-level XBRL context and dimension parsing with declarative concept-axis-member KPI mappings.
+- Automatic latest 10-K filing-directory discovery, XBRL instance retrieval, text caching, and
+  source override for live dimensional KPI extraction.
 - Subscriber/seat × ARPU operating archetype with an explicit, reconciled residual business.
+- Out-of-sample business-driver backtest metrics with Top-down baseline comparison.
 - Valuation-bridge readiness and debt/interest consistency diagnostics before DCF construction.
 - Historical and forecast ratios displayed together with continuous blue trend charts.
 - Offline unit and integration tests.
@@ -128,6 +131,10 @@ python -m fmva.cli business-kpis \
   --instance tests/fixtures/msft_segment_instance_sample.xml \
   --mapping config/business_kpi_mapping.msft.yaml \
   --output outputs/msft_segment_kpis.csv
+python -m fmva.cli backtest \
+  --input research/frozen_forecasts.csv \
+  --summary-output outputs/backtest_summary.csv \
+  --errors-output outputs/backtest_errors.csv
 ```
 
 The linked forecast engine can be audited without network access:
@@ -201,6 +208,8 @@ validation.
 - [KO and MSFT compatibility validation](docs/ko_msft_compatibility_validation.md)
 - [Manual CSV and Excel input](docs/manual_data_input.md)
 - [Scenario analysis](docs/scenario_analysis.md)
+- [Business-driver backtesting](docs/business_driver_backtesting.md)
+- [MSFT live dimensional XBRL validation](docs/msft_live_dimensional_xbrl_validation.md)
 
 ## Data and privacy
 

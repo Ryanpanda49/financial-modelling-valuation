@@ -9,8 +9,12 @@ source:
 
 rules:
   - metric: segment_revenue
-    concept: RevenueFromExternalCustomers
-    axis: OperatingSegmentsAxis
+    concepts:
+      - RevenueFromContractWithCustomerExcludingAssessedTax
+      - RevenueFromExternalCustomers
+    axes:
+      - StatementBusinessSegmentsAxis
+      - OperatingSegmentsAxis
     unit: USD millions
     scale: 0.000001
     members:
@@ -18,8 +22,12 @@ rules:
       IntelligentCloudMember: intelligent_cloud
       MorePersonalComputingMember: more_personal_computing
   - metric: segment_cogs
-    concept: CostOfRevenue
-    axis: OperatingSegmentsAxis
+    concepts:
+      - CostOfGoodsAndServicesSold
+      - CostOfRevenue
+    axes:
+      - StatementBusinessSegmentsAxis
+      - OperatingSegmentsAxis
     unit: USD millions
     scale: 0.000001
     members:

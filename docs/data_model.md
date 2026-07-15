@@ -321,3 +321,16 @@ mapped metric-dimension-year keys fail instead of being silently resolved.
 The SEC filing directory locator excludes calculation, definition, label, presentation, report,
 and filing-summary XML files. Ambiguous instance candidates raise an error and require an explicit
 primary-document hint. The parser does not execute taxonomy formulas or external linkbases.
+
+Mapping rules accept ordered concept and axis aliases. Runtime retrieval replaces example source
+metadata with the selected accession, filing date, and canonical instance URL. The KPI quality
+summary reports record, metric, dimension, year, direct/recast, confidence, and source-completeness
+coverage.
+
+## Backtest observation contract
+
+Frozen forecasts are stored separately from model assumptions and reported history. The canonical
+key is model, metric, origin year, and target year. Actual and predicted values are mandatory;
+baseline prediction and prior actual are optional. Target years must follow origin years, duplicate
+keys fail, and non-finite values are rejected. See
+[`business_driver_backtesting.md`](business_driver_backtesting.md).

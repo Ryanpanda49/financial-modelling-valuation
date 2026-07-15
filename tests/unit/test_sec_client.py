@@ -47,6 +47,23 @@ def test_client_retries_and_reports_failure(tmp_path: Path) -> None:
     assert calls == 3
 
 
+def test_client_caches_text_response_and_requests_xml(tmp_path: Path) -> None:
+    calls = []
+
+    def text_transport(url: str, headers: dict[str, str], timeout: float) -> str:
+        calls.append((url, headers, timeout))
+        return "<xbrl/>"
+
+    client = SecClient(
+        config(tmp_path), text_transport=text_transport, sleeper=lambda _: None
+    )
+
+    assert client.get_text("https://example.test/a.xml") == "<xbrl/>"
+    assert client.get_text("https://example.test/a.xml") == "<xbrl/>"
+    assert len(calls) == 1
+    assert "application/xml" in calls[0][1]["Accept"]
+
+
 def test_sec_transport_decodes_gzip_and_deflate_content() -> None:
     payload = json.dumps({"ok": True}).encode("utf-8")
 

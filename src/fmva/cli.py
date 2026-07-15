@@ -11,6 +11,7 @@ from typing import Any
 
 import yaml
 
+from fmva.analysis.backtesting import BacktestReport
 from fmva.analysis.ratios import calculate_financial_ratios
 from fmva.checks.historical import HistoricalCheckSuite
 from fmva.config.loader import load_config
@@ -26,6 +27,7 @@ from fmva.output.assumptions import summarize_assumptions
 from fmva.sec.client import SecClient
 from fmva.sec.company_facts import CompanyFacts
 from fmva.sec.company_registry import CompanyRegistry
+from fmva.sec.filing_instance import FilingInstanceService
 from fmva.sec.xbrl_dimensions import (
     BusinessKpiMapping,
     dimensional_facts_to_business_kpis,
@@ -67,9 +69,23 @@ def build_parser() -> argparse.ArgumentParser:
         "business-kpis",
         help="Convert a filing-level XBRL instance into canonical dimensional KPIs.",
     )
-    business_kpis.add_argument("--instance", required=True)
+    business_kpi_source = business_kpis.add_mutually_exclusive_group(required=True)
+    business_kpi_source.add_argument("--instance", help="Local XBRL instance XML.")
+    business_kpi_source.add_argument(
+        "--identifier", help="Ticker or CIK for automatic latest 10-K discovery."
+    )
     business_kpis.add_argument("--mapping", required=True)
+    business_kpis.add_argument("--config", help="Private SEC config; required with --identifier.")
+    business_kpis.add_argument("--accession", help="Optional explicit 10-K accession number.")
     business_kpis.add_argument("--output", help="Optional canonical CSV output path.")
+    business_kpis.add_argument("--quality-output", help="Optional JSON quality-summary path.")
+    backtest = subcommands.add_parser(
+        "backtest",
+        help="Measure frozen business-driver forecasts against later actual results.",
+    )
+    backtest.add_argument("--input", required=True, help="Canonical backtest observation CSV.")
+    backtest.add_argument("--summary-output", help="Optional grouped accuracy CSV.")
+    backtest.add_argument("--errors-output", help="Optional observation-level error CSV.")
     forecast = subcommands.add_parser("forecast", help="Run the linked synthetic/manual forecast engine.")
     forecast.add_argument("--initial", required=True)
     forecast.add_argument("--assumptions", required=True)
@@ -88,17 +104,80 @@ def main(argv: list[str] | None = None) -> int:
 
     configure_logging()
     args = build_parser().parse_args(argv)
+    if args.command == "backtest":
+        backtest_report = BacktestReport.from_csv(args.input)
+        if args.summary_output:
+            summary_path = Path(args.summary_output)
+            summary_path.parent.mkdir(parents=True, exist_ok=True)
+            backtest_report.summary.to_csv(summary_path, index=False)
+        if args.errors_output:
+            errors_path = Path(args.errors_output)
+            errors_path.parent.mkdir(parents=True, exist_ok=True)
+            backtest_report.errors.to_csv(errors_path, index=False)
+        summary_records = backtest_report.summary.astype(object).where(
+            backtest_report.summary.notna(), None
+        ).to_dict(orient="records")
+        print(json.dumps({"summary": summary_records}, indent=2, allow_nan=False))
+        return 0
     if args.command == "business-kpis":
         mapping = BusinessKpiMapping.from_yaml(args.mapping)
+        source_identity: dict[str, object]
+        if args.identifier:
+            if not args.config:
+                raise SystemExit("--config is required when --identifier is used.")
+            config = load_config(args.config, live_sec=True)
+            client = SecClient(config.sec)
+            company = CompanyRegistry(client).get_company(args.identifier)
+            submissions = client.submissions(company.cik)
+            instance = FilingInstanceService(client).fetch_latest_10k(
+                company.cik,
+                submissions,
+                accession_number=args.accession,
+            )
+            mapping = mapping.with_filing_source(
+                source_url=instance.document_url,
+                source_document=(
+                    f"{company.name} {instance.filing.form} XBRL instance "
+                    f"{instance.filing.accession_number}"
+                ),
+                filing_date=instance.filing.filing_date,
+            )
+            xml_source: str | Path = instance.content
+            source_identity = {
+                "ticker": company.ticker,
+                "cik": company.cik,
+                "accession_number": instance.filing.accession_number,
+                "instance_url": instance.document_url,
+            }
+        else:
+            xml_source = Path(args.instance)
+            source_identity = {"instance_path": str(xml_source)}
         kpi_history = dimensional_facts_to_business_kpis(
-            parse_dimensional_facts(Path(args.instance)), mapping
+            parse_dimensional_facts(xml_source), mapping
         )
         frame = kpi_history.to_frame()
+        quality = kpi_history.quality_summary()
         if args.output:
             output_path = Path(args.output)
             output_path.parent.mkdir(parents=True, exist_ok=True)
             frame.to_csv(output_path, index=False)
-        print(json.dumps(frame.to_dict(orient="records"), indent=2, default=_json_default))
+        if args.quality_output:
+            quality_path = Path(args.quality_output)
+            quality_path.parent.mkdir(parents=True, exist_ok=True)
+            quality_path.write_text(
+                json.dumps(quality, indent=2, default=_json_default), encoding="utf-8"
+            )
+        print(
+            json.dumps(
+                {
+                    "source": source_identity,
+                    "quality": quality,
+                    "records": frame.to_dict(orient="records"),
+                },
+                indent=2,
+                default=_json_default,
+            )
+        )
         return 0
     if args.command == "forecast":
         initial_payload = yaml.safe_load(Path(args.initial).read_text(encoding="utf-8"))

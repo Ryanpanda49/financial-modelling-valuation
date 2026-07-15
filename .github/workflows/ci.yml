@@ -91,6 +91,13 @@ jobs:
           --instance tests/fixtures/msft_segment_instance_sample.xml
           --mapping config/business_kpi_mapping.msft.yaml
           --output "${{ runner.temp }}/msft-segment-kpis.csv"
+          --quality-output "${{ runner.temp }}/msft-segment-quality.json"
+      - name: Run business-driver backtest metrics offline
+        run: >-
+          python -m fmva.cli backtest
+          --input tests/fixtures/business_driver_backtest_sample.csv
+          --summary-output "${{ runner.temp }}/backtest-summary.csv"
+          --errors-output "${{ runner.temp }}/backtest-errors.csv"
       - name: Run MSFT subscriber and ARPU archetype offline
         run: >-
           python -m fmva.run

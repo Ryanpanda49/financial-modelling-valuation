@@ -133,6 +133,27 @@ class BusinessKpiHistory:
             raise HistoricalDataError(f"Business KPI metric not found: {metric}")
         return selected.pivot(index="dimension", columns="fiscal_year", values="value")
 
+    def quality_summary(self) -> dict[str, object]:
+        """Return a compact evidence and coverage summary for CLI and audit outputs."""
+
+        frame = self.to_frame()
+        source_complete = frame[
+            ["source_name", "source_url", "source_document", "filing_date"]
+        ].apply(lambda column: column.astype(str).str.strip().ne(""))
+        return {
+            "record_count": int(len(frame)),
+            "metrics": sorted(str(value) for value in frame["metric"].unique()),
+            "dimensions": sorted(str(value) for value in frame["dimension"].unique()),
+            "fiscal_years": sorted(int(value) for value in frame["fiscal_year"].unique()),
+            "source_complete_count": int(source_complete.all(axis=1).sum()),
+            "direct_count": int(frame["is_direct"].sum()),
+            "restated_count": int(frame["is_restated"].sum()),
+            "confidence_counts": {
+                str(key): int(value)
+                for key, value in frame["confidence"].value_counts().sort_index().items()
+            },
+        }
+
 
 def _parse_bool(value: object) -> bool:
     if isinstance(value, bool):

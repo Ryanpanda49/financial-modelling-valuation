@@ -37,6 +37,22 @@ python -m fmva.cli business-kpis \
   --output outputs/msft_segment_kpis.csv
 ```
 
+With a private SEC configuration, the filing directory and instance can be discovered and cached
+automatically:
+
+```bash
+python -m fmva.cli business-kpis \
+  --identifier MSFT \
+  --config config/model_config.yaml \
+  --accession 0000950170-25-100235 \
+  --mapping config/business_kpi_mapping.msft.yaml \
+  --output outputs/msft_live_instance/msft_business_kpis.csv \
+  --quality-output outputs/msft_live_instance/quality.json
+```
+
+The FY2025 live validation produced the same 18 segment revenue/COGS values as the reviewed sample.
+See [the validation note](../../docs/msft_live_dimensional_xbrl_validation.md).
+
 ## Subscriber/ARPU archetype
 
 ```bash

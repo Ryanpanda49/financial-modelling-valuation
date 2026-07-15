@@ -35,7 +35,7 @@ flowchart TD
     A["Ticker or CIK"] --> B["Company Registry"]
     B --> C["SEC Client + cache + rate limiter"]
     C --> D["Raw Company Facts / submissions / filing metadata"]
-    C --> DX["Filing directory + XBRL instance"]
+    C --> DX["10-K selector + filing directory + cached XBRL instance"]
     DX --> DY["Dimensional facts + contexts"]
     DY --> DZ["Business KPI mapping + provenance"]
     D --> E["Fact normalization and period classification"]
@@ -64,6 +64,8 @@ flowchart TD
     R --> T["Result bundle"]
     S --> T
     T --> U["Excel / Markdown / charts / structured tables"]
+    J --> BT["Frozen forecast observations"]
+    BT --> BR["Accuracy metrics vs Top-down baseline"]
 ```
 
 ## Recommended repository structure

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -47,8 +47,8 @@ class BusinessKpiRule:
     """Declarative mapping from an XBRL concept/member pair to a canonical KPI."""
 
     metric: str
-    concept: str
-    axis: str
+    concepts: tuple[str, ...]
+    axes: tuple[str, ...]
     members: Mapping[str, str]
     unit: str
     scale: float
@@ -75,8 +75,8 @@ class BusinessKpiMapping:
             rules = tuple(
                 BusinessKpiRule(
                     metric=str(rule["metric"]),
-                    concept=str(rule["concept"]),
-                    axis=str(rule["axis"]),
+                    concepts=_string_tuple(rule.get("concepts", rule.get("concept"))),
+                    axes=_string_tuple(rule.get("axes", rule.get("axis"))),
                     members={str(key): str(value) for key, value in rule["members"].items()},
                     unit=str(rule["unit"]),
                     scale=float(rule.get("scale", 1.0)),
@@ -99,6 +99,24 @@ class BusinessKpiMapping:
         if result.confidence not in {"HIGH", "MEDIUM", "LOW"} or not result.rules:
             raise ConfigurationError("Dimensional KPI mapping requires rules and valid confidence.")
         return result
+
+    def with_filing_source(
+        self,
+        *,
+        source_url: str,
+        source_document: str,
+        filing_date: date,
+    ) -> BusinessKpiMapping:
+        """Override static example metadata with the filing selected at runtime."""
+
+        if not source_url.startswith("https://"):
+            raise ConfigurationError("Runtime filing source URL must use HTTPS.")
+        return replace(
+            self,
+            source_url=source_url,
+            source_document=source_document,
+            filing_date=filing_date,
+        )
 
 
 def filing_directory_url(cik: str | int, accession_number: str) -> str:
@@ -188,8 +206,12 @@ def dimensional_facts_to_business_kpis(
     seen: set[tuple[str, str, int]] = set()
     for rule in mapping.rules:
         for fact in facts:
-            member = fact.context.dimensions.get(rule.axis)
-            if fact.concept != rule.concept or member is None or member not in rule.members:
+            axis = next(
+                (candidate for candidate in rule.axes if candidate in fact.context.dimensions),
+                None,
+            )
+            member = fact.context.dimensions.get(axis) if axis is not None else None
+            if fact.concept not in rule.concepts or member is None or member not in rule.members:
                 continue
             if fact.context.end_date is None or fact.context.start_date is None:
                 continue
@@ -217,7 +239,7 @@ def dimensional_facts_to_business_kpis(
                     is_direct=True,
                     is_restated=fiscal_year in mapping.restated_years,
                     notes=(
-                        f"Direct XBRL fact {rule.concept}; axis {rule.axis}; "
+                        f"Direct XBRL fact {fact.concept}; axis {axis}; "
                         f"member {member}; context {fact.context_id}."
                     ),
                 )
@@ -273,3 +295,11 @@ def _local_name(value: str) -> str:
 
 def _qname_local(value: str) -> str:
     return value.split(":", 1)[-1].strip()
+
+
+def _string_tuple(value: Any) -> tuple[str, ...]:
+    if isinstance(value, str) and value.strip():
+        return (value.strip(),)
+    if isinstance(value, list) and value and all(isinstance(item, str) and item.strip() for item in value):
+        return tuple(item.strip() for item in value)
+    raise ValueError("concept(s) and axis/axes must contain one or more names")

@@ -1,0 +1,5 @@
+model,metric,origin_year,target_year,actual,predicted,baseline_predicted,prior_actual
+segment_revenue,revenue,2021,2022,110.0,108.0,100.0,100.0
+segment_revenue,revenue,2022,2023,120.0,126.0,100.0,110.0
+subscriber_arpu,revenue,2021,2022,110.0,105.0,100.0,100.0
+subscriber_arpu,revenue,2022,2023,120.0,115.0,100.0,110.0

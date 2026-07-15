@@ -3,6 +3,8 @@
 Company-specific operating logic implements the `OperatingModel` interface. See
 [`business_driver_models.md`](business_driver_models.md) for the optional COST warehouse and
 membership model; the default remains the generic top-down model.
+Source-aware business KPIs remain separate from canonical financial accounts and feed optional
+company operating models through an auditable long-form adapter.
 
 ## Product boundary
 

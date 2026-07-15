@@ -36,6 +36,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional company-specific bottom-up business-driver YAML.",
     )
     parser.add_argument(
+        "--business-kpi-history",
+        help="Optional source-aware historical business KPI CSV/XLSX.",
+    )
+    parser.add_argument(
         "--scenario-set",
         help="YAML file containing one or more named forecast/valuation cases.",
     )
@@ -67,6 +71,7 @@ def main(argv: list[str] | None = None) -> int:
                     forecast_assumptions_path=scenario.forecast_assumptions_path,
                     valuation_assumptions_path=scenario.valuation_assumptions_path,
                     business_driver_path=args.business_drivers,
+                    business_kpi_history_path=args.business_kpi_history,
                 )
             )
             payloads[scenario.slug] = _export_result(
@@ -93,6 +98,7 @@ def _build_model(
             forecast_assumptions_path=forecast_assumptions_path,
             valuation_assumptions_path=valuation_assumptions_path,
             business_driver_path=args.business_drivers,
+            business_kpi_history_path=args.business_kpi_history,
         )
     elif args.history_table:
         model = ValuationModel.from_tabular_history(
@@ -101,6 +107,7 @@ def _build_model(
             valuation_assumptions_path=valuation_assumptions_path,
             account_mapping_path=args.mapping,
             business_driver_path=args.business_drivers,
+            business_kpi_history_path=args.business_kpi_history,
         )
     else:
         if not args.config:
@@ -112,6 +119,7 @@ def _build_model(
             valuation_assumptions_path=valuation_assumptions_path,
             account_mapping_path=args.mapping,
             business_driver_path=args.business_drivers,
+            business_kpi_history_path=args.business_kpi_history,
         )
     return model
 

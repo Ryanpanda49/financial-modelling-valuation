@@ -28,3 +28,4 @@ class ModelResultData:
     historical_ratios: RatioResult | None = None
     historical_checks: tuple[CheckResult, ...] = ()
     opening_state_warnings: tuple[str, ...] = ()
+    business_kpi_history: pd.DataFrame | None = None

@@ -55,6 +55,8 @@ def export_markdown(data: ModelResultData, path: str | Path) -> Path:
 
 {_historical_quality_markdown(data)}
 
+{_business_history_markdown(data)}
+
 ## Forecast Assumptions
 
 {assumptions_table}
@@ -175,6 +177,16 @@ def _business_driver_markdown(data: ModelResultData) -> str:
         "## Business Driver Model\n\n"
         "> Illustrative researcher inputs; not company guidance.\n\n"
         + data.forecast.business_drivers.to_markdown(floatfmt=",.4f")
+    )
+
+
+def _business_history_markdown(data: ModelResultData) -> str:
+    if data.business_kpi_history is None:
+        return ""
+    return (
+        "## Historical Business KPIs\n\n"
+        "Reported operating metrics retain source and restatement metadata.\n\n"
+        + data.business_kpi_history.to_markdown(index=False, floatfmt=",.2f")
     )
 
 

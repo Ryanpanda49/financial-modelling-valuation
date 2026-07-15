@@ -8,10 +8,12 @@ from pathlib import Path
 from typing import Any
 
 from fmva.analysis.ratios import calculate_financial_ratios, calculate_historical_ratios
+from fmva.checks.business_kpis import BusinessKpiCheckSuite
 from fmva.checks.historical import HistoricalCheckSuite
 from fmva.checks.models import CheckResult
 from fmva.config.loader import load_config
 from fmva.data.account_mapping import AccountMap, AccountMapper
+from fmva.data.business_kpis import BusinessKpiHistory
 from fmva.data.statement_builder import HistoricalStatements, StatementBuilder
 from fmva.data.tabular_import import import_canonical_history
 from fmva.exceptions import HistoricalDataError
@@ -41,6 +43,7 @@ class ValuationModel:
     valuation_assumptions: ValuationAssumptions
     historical_checks: tuple[CheckResult, ...]
     operating_model: OperatingModel | None = None
+    business_kpi_history: BusinessKpiHistory | None = None
 
     @classmethod
     def from_sec(
@@ -52,6 +55,7 @@ class ValuationModel:
         valuation_assumptions_path: str | Path = "config/valuation_assumptions.example.yaml",
         account_mapping_path: str | Path = "config/account_mapping.yaml",
         business_driver_path: str | Path | None = None,
+        business_kpi_history_path: str | Path | None = None,
     ) -> ValuationModel:
         """Fetch live SEC data and construct a ready-to-run model.
 
@@ -72,6 +76,7 @@ class ValuationModel:
             valuation_assumptions_path=valuation_assumptions_path,
             tolerance=config.model.absolute_tolerance,
             business_driver_path=business_driver_path,
+            business_kpi_history_path=business_kpi_history_path,
         )
 
     @classmethod
@@ -84,6 +89,7 @@ class ValuationModel:
         valuation_assumptions_path: str | Path,
         tolerance: float = 1e-6,
         business_driver_path: str | Path | None = None,
+        business_kpi_history_path: str | Path | None = None,
     ) -> ValuationModel:
         """Construct the workflow from standardized history for offline/reproducible use."""
 
@@ -94,7 +100,17 @@ class ValuationModel:
             raise ValueError(
                 "Forecast assumptions must start immediately after the latest opening fiscal year."
             )
+        business_kpi_history = (
+            BusinessKpiHistory.from_tabular(business_kpi_history_path)
+            if business_kpi_history_path is not None
+            else None
+        )
         checks = HistoricalCheckSuite(absolute_tolerance=tolerance).run(history)
+        if business_kpi_history is not None:
+            checks += BusinessKpiCheckSuite(tolerance=tolerance).run(
+                business_kpi_history,
+                history,
+            )
         return cls(
             company=company,
             history=history,
@@ -107,6 +123,7 @@ class ValuationModel:
                 if business_driver_path is not None
                 else None
             ),
+            business_kpi_history=business_kpi_history,
         )
 
     @classmethod
@@ -118,6 +135,7 @@ class ValuationModel:
         valuation_assumptions_path: str | Path,
         tolerance: float = 1e-6,
         business_driver_path: str | Path | None = None,
+        business_kpi_history_path: str | Path | None = None,
     ) -> ValuationModel:
         """Construct an offline workflow from a versioned standardized-history snapshot."""
 
@@ -148,6 +166,7 @@ class ValuationModel:
             valuation_assumptions_path=valuation_assumptions_path,
             tolerance=tolerance,
             business_driver_path=business_driver_path,
+            business_kpi_history_path=business_kpi_history_path,
         )
 
     @classmethod
@@ -160,6 +179,7 @@ class ValuationModel:
         account_mapping_path: str | Path = "config/account_mapping.yaml",
         tolerance: float = 1e-6,
         business_driver_path: str | Path | None = None,
+        business_kpi_history_path: str | Path | None = None,
     ) -> ValuationModel:
         """Construct an offline workflow from canonical CSV or Excel history."""
 
@@ -174,6 +194,7 @@ class ValuationModel:
             valuation_assumptions_path=valuation_assumptions_path,
             tolerance=tolerance,
             business_driver_path=business_driver_path,
+            business_kpi_history_path=business_kpi_history_path,
         )
 
     def run(self) -> ModelResult:
@@ -224,6 +245,11 @@ class ValuationModel:
             historical_ratios=historical_ratios,
             historical_checks=self.historical_checks,
             opening_state_warnings=self.opening_state.warnings,
+            business_kpi_history=(
+                self.business_kpi_history.to_frame()
+                if self.business_kpi_history is not None
+                else None
+            ),
         )
 
 

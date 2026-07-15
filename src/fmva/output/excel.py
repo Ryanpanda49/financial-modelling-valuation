@@ -63,6 +63,8 @@ def export_excel(data: ModelResultData, path: str | Path) -> Path:
     ]
     if data.forecast.business_drivers is not None:
         sheet_names.insert(4, "Business_Drivers")
+    if data.business_kpi_history is not None:
+        sheet_names.insert(4, "Business_History")
     sheets = {name: workbook.create_sheet(name) for name in sheet_names}
     for sheet in sheets.values():
         _prepare_sheet(sheet)
@@ -70,6 +72,8 @@ def export_excel(data: ModelResultData, path: str | Path) -> Path:
     _write_sources(sheets["Sources_Audit"], data)
     _write_historical(sheets["Historical"], data)
     _write_assumptions(sheets["Assumptions"], data.assumption_summary)
+    if data.business_kpi_history is not None:
+        _write_business_history(sheets["Business_History"], data.business_kpi_history)
     if data.forecast.business_drivers is not None:
         _write_business_drivers(sheets["Business_Drivers"], data.forecast.business_drivers)
     _write_financial_table(
@@ -107,7 +111,7 @@ def _write_business_drivers(sheet: Worksheet, frame: pd.DataFrame) -> None:
     """Write auditable company-specific drivers using blue input conventions."""
 
     years = list(frame.columns)
-    _title(sheet, "Business Drivers — Warehouse & Membership Model", len(years) + 1)
+    _title(sheet, "Business Drivers — Company Operating Model", len(years) + 1)
     sheet["A2"] = "Illustrative researcher inputs and calculated revenue bridge; not company guidance."
     sheet["A2"].font = Font(italic=True, color=PRIMARY_BLUE)
     _table_header(sheet, 4, ["Business driver", *years])
@@ -121,6 +125,11 @@ def _write_business_drivers(sheet: Worksheet, frame: pd.DataFrame) -> None:
         "renewal_rate",
         "merchandise_cogs_as_pct_sales",
     }
+    input_rows.update(
+        label
+        for label in frame.index
+        if str(label).endswith(("_revenue_growth", "_cogs_as_pct_revenue"))
+    )
     percentage_rows = {
         "comparable_sales_growth",
         "new_warehouse_productivity",
@@ -130,7 +139,20 @@ def _write_business_drivers(sheet: Worksheet, frame: pd.DataFrame) -> None:
         "renewal_rate",
         "merchandise_cogs_as_pct_sales",
     }
-    total_rows = {"merchandise_revenue", "membership_fee_revenue", "total_revenue", "merchandise_cogs"}
+    percentage_rows.update(
+        label
+        for label in frame.index
+        if str(label).endswith(("_revenue_growth", "_cogs_as_pct_revenue"))
+    )
+    percentage_rows.add("consolidated_gross_margin")
+    total_rows = {
+        "merchandise_revenue",
+        "membership_fee_revenue",
+        "total_revenue",
+        "merchandise_cogs",
+        "total_segment_cogs",
+        "consolidated_gross_margin",
+    }
     for row, (label, values) in enumerate(frame.iterrows(), 5):
         sheet.cell(row, 1, _display_label(str(label)))
         for column, value in enumerate(values, 2):
@@ -149,6 +171,49 @@ def _write_business_drivers(sheet: Worksheet, frame: pd.DataFrame) -> None:
                 )
                 sheet.cell(row, column).border = Border(top=THIN_BLUE)
     _size_financial_sheet(sheet, len(years) + 1)
+    sheet.column_dimensions["A"].width = 58
+
+
+def _write_business_history(sheet: Worksheet, frame: pd.DataFrame) -> None:
+    """Write source-aware historical operating KPIs without styling imports as inputs."""
+
+    columns = list(frame.columns)
+    _title(sheet, "Historical Business KPI Sources", len(columns))
+    sheet["A2"] = "Reported operating data with field-level source, recast, and quality metadata."
+    sheet["A2"].font = Font(italic=True, color=PRIMARY_BLUE)
+    _table_header(sheet, 4, [_display_label(str(column)) for column in columns])
+    for row_number, record in enumerate(frame.itertuples(index=False, name=None), 5):
+        for column_number, (key, value) in enumerate(zip(columns, record, strict=True), 1):
+            cell = sheet.cell(row_number, column_number, _excel_value(value))
+            cell.fill = PatternFill("solid", fgColor=PALE_BLUE)
+            if key == "value":
+                cell.number_format = FINANCIAL_FORMAT
+                cell.alignment = Alignment(horizontal="right")
+            elif key == "filing_date":
+                cell.number_format = "yyyy-mm-dd"
+            elif key == "source_url":
+                cell.font = Font(color=GREEN, underline="single")
+                cell.alignment = Alignment(wrap_text=True, vertical="top")
+            elif key in {"notes", "source_document"}:
+                cell.alignment = Alignment(wrap_text=True, vertical="top")
+    widths = {
+        "metric": 22,
+        "dimension": 38,
+        "fiscal_year": 12,
+        "value": 16,
+        "unit": 16,
+        "source_name": 16,
+        "source_url": 78,
+        "source_document": 34,
+        "filing_date": 14,
+        "confidence": 12,
+        "is_direct": 12,
+        "is_restated": 12,
+        "notes": 48,
+    }
+    for column_number, key in enumerate(columns, 1):
+        sheet.column_dimensions[get_column_letter(column_number)].width = widths.get(key, 16)
+    sheet.freeze_panes = "C5"
 
 
 def _prepare_sheet(sheet: Worksheet) -> None:
@@ -445,7 +510,14 @@ def _write_checks_sheet(sheet: Worksheet, data: ModelResultData) -> int:
             item.message or "",
         ]
         for column, value in enumerate(values, 1):
-            cell = sheet.cell(row, column, _excel_value(value))
+            display_value = (
+                0.0
+                if column == 4
+                and isinstance(value, (int, float))
+                and abs(float(value)) <= item.tolerance
+                else value
+            )
+            cell = sheet.cell(row, column, _excel_value(display_value))
             if column in {2, 3, 4, 5}:
                 cell.number_format = '0.000000;[Red](0.000000);-'
         sheet.cell(row, 9).alignment = Alignment(wrap_text=True)

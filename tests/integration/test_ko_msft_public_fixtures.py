@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
+from openpyxl import load_workbook
 
 from fmva import ValuationModel
 from fmva.data.statement_builder import HistoricalStatements
@@ -51,3 +52,36 @@ def test_ko_debt_and_trade_payables_use_explicit_fallbacks() -> None:
         latest["long_term_debt"].provenance.source_tag
         == "LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities"
     )
+
+
+def test_msft_segment_model_and_sourced_kpis_flow_to_outputs(tmp_path: Path) -> None:
+    model = ValuationModel.from_history_json(
+        "data/sample/msft_fy2021_2025_history.json",
+        forecast_assumptions_path="examples/msft/forecast_assumptions.yaml",
+        valuation_assumptions_path="examples/msft/valuation_assumptions.yaml",
+        business_driver_path="examples/msft/business_drivers.yaml",
+        business_kpi_history_path="data/sample/msft_business_kpis_fy2023_2025.csv",
+    )
+    result = model.run()
+
+    assert result.business_kpi_history is not None
+    assert result.forecast.business_drivers is not None
+    assert all(check.status.value == "PASS" for check in result.historical_checks)
+    assert all(check.status.value == "PASS" for check in result.forecast.checks)
+    assert result.forecast.income_statement.loc["revenue", 2026] == pytest.approx(
+        result.forecast.business_drivers.loc["total_revenue", 2026]
+    )
+    assert {check.check for check in result.historical_checks} >= {
+        "business_kpi_source_completeness",
+        "business_kpi_segment_revenue_tie",
+        "business_kpi_segment_cogs_tie",
+    }
+
+    workbook = result.export_excel(tmp_path / "msft_segment_model.xlsx")
+    report = result.export_markdown(tmp_path / "msft_segment_model.md")
+    tables = result.export_tables(tmp_path / "tables")
+    assert {"Business_History", "Business_Drivers"} <= set(
+        load_workbook(workbook, read_only=True).sheetnames
+    )
+    assert "## Historical Business KPIs" in report.read_text(encoding="utf-8")
+    assert "business_kpi_history" in tables

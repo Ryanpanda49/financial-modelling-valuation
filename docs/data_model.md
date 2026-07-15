@@ -291,3 +291,21 @@ statement. The first implementation uses warehouse counts, comparable sales, new
 productivity, merchandise revenue, paid-member equivalents, effective fees, membership-fee
 revenue, and merchandise COGS. These are researcher inputs or calculations, not SEC facts; they do
 not inherit SEC field-level provenance.
+
+## Historical business KPI contract
+
+Business KPIs that do not belong in the canonical three statements use a separate long-form table:
+
+| Field | Purpose |
+|---|---|
+| metric / dimension | Canonical KPI and business, product, geography, or cohort member. |
+| fiscal_year / value / unit | Period and typed observation. |
+| source_name / source_url / source_document | Direct review path to the disclosure. |
+| filing_date | Date of the source filing or report. |
+| confidence | HIGH, MEDIUM, or LOW. |
+| is_direct / is_restated | Directness and comparative-period restatement flags. |
+| notes | Scope, definition, or comparability caveat. |
+
+Duplicate metric-dimension-year keys, invalid booleans, absent source URLs, and unsupported units or
+confidence labels fail loudly. Consolidated segment-revenue and segment-COGS totals are checked
+against standardized historical statements when present.

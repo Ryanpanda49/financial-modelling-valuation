@@ -15,6 +15,7 @@ from fmva.analysis.ratios import calculate_financial_ratios
 from fmva.checks.historical import HistoricalCheckSuite
 from fmva.config.loader import load_config
 from fmva.data.account_mapping import AccountMap, AccountMapper
+from fmva.data.business_kpis import BusinessKpiHistory
 from fmva.data.statement_builder import StatementBuilder
 from fmva.forecasting.assumptions import ForecastAssumptions
 from fmva.forecasting.business_drivers import load_business_driver_model
@@ -62,6 +63,7 @@ def build_parser() -> argparse.ArgumentParser:
     forecast.add_argument("--assumptions", required=True)
     forecast.add_argument("--valuation")
     forecast.add_argument("--business-drivers")
+    forecast.add_argument("--business-kpi-history")
     forecast.add_argument("--output", help="Export Markdown, CSV tables, and PNG charts.")
     forecast.add_argument("--company-name", default="Manual Model")
     forecast.add_argument("--ticker", default="MANUAL")
@@ -82,6 +84,11 @@ def main(argv: list[str] | None = None) -> int:
             load_business_driver_model(args.business_drivers) if args.business_drivers else None
         )
         forecast_result = ThreeStatementModel(operating_model).run(initial, forecast_assumptions)
+        business_kpi_history = (
+            BusinessKpiHistory.from_tabular(args.business_kpi_history).to_frame()
+            if args.business_kpi_history
+            else None
+        )
         output = {
             "income_statement": forecast_result.income_statement.to_dict(),
             "balance_sheet": forecast_result.balance_sheet.to_dict(),
@@ -93,6 +100,8 @@ def main(argv: list[str] | None = None) -> int:
         }
         if forecast_result.business_drivers is not None:
             output["business_drivers"] = forecast_result.business_drivers.to_dict()
+        if business_kpi_history is not None:
+            output["business_kpi_history"] = business_kpi_history.to_dict(orient="records")
         ratios = calculate_financial_ratios(forecast_result, initial)
         output["financial_ratios"] = ratios.table.astype(object).where(
             ratios.table.notna(), None
@@ -139,6 +148,7 @@ def main(argv: list[str] | None = None) -> int:
                         "Forecast begins from a manually supplied opening state; SEC historical "
                         "provenance is not included in this report.",
                     ),
+                    business_kpi_history=business_kpi_history,
                 )
                 report = result.export_markdown(export_directory / "report.md")
                 workbook = result.export_excel(export_directory / "model.xlsx")

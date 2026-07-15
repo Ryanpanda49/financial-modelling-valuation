@@ -1,6 +1,6 @@
 # Business driver models
 
-The framework supports two operating-model layers without changing the linked statement engine:
+The framework supports multiple operating-model layers without changing the linked statement engine:
 
 1. `TopDownOperatingModel` is the default. Revenue growth and operating cost ratios come from
    the centralized forecast assumptions YAML.
@@ -44,3 +44,21 @@ counting because their economic effects are reflected in member growth and effec
   guidance. The sample is deliberately labelled illustrative.
 - The interface is extensible to product, geography, subscriber, seat, capacity, or price-volume
   models. Financial institutions remain outside the MVP.
+
+## Generic segment revenue model
+
+`SegmentRevenueModel` forecasts each reported business separately. Every segment has an opening
+revenue, annual revenue-growth path, and COGS-to-revenue path. Segment revenue and COGS sum to the
+consolidated operating forecast before the common SG&A, R&D, fixed-asset, financing, tax, and cash
+schedules run.
+
+The MSFT example uses the FY2025 Form 10-K segment structure:
+
+- Productivity and Business Processes;
+- Intelligent Cloud;
+- More Personal Computing.
+
+The accompanying historical KPI file contains FY2023–FY2025 segment revenue and cost of revenue,
+including the prior-period restatement flag. The check suite proves that latest segment revenue and
+segment COGS each sum to the standardized consolidated statement. Forecast segment growth and cost
+ratios remain illustrative researcher inputs and are not Microsoft guidance.

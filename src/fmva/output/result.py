@@ -35,6 +35,7 @@ class ModelResult:
     historical_ratios: RatioResult | None = None
     historical_checks: tuple[CheckResult, ...] = ()
     opening_state_warnings: tuple[str, ...] = ()
+    business_kpi_history: pd.DataFrame | None = None
 
     def _data(self) -> ModelResultData:
         return ModelResultData(
@@ -51,6 +52,7 @@ class ModelResult:
             historical_ratios=self.historical_ratios,
             historical_checks=self.historical_checks,
             opening_state_warnings=self.opening_state_warnings,
+            business_kpi_history=self.business_kpi_history,
         )
 
     def export_markdown(self, path: str | Path) -> Path:
@@ -93,6 +95,8 @@ class ModelResult:
         }
         if self.forecast.business_drivers is not None:
             tables["business_drivers"] = self.forecast.business_drivers
+        if self.business_kpi_history is not None:
+            tables["business_kpi_history"] = self.business_kpi_history
         if self.historical is not None:
             tables.update(
                 {

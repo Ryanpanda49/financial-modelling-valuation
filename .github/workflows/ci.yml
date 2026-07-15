@@ -76,6 +76,15 @@ jobs:
           --forecast-assumptions examples/msft/forecast_assumptions.yaml
           --valuation-assumptions examples/msft/valuation_assumptions.yaml
           --output "${{ runner.temp }}/msft"
+      - name: Run MSFT sourced segment workflow offline
+        run: >-
+          python -m fmva.run
+          --history-json data/sample/msft_fy2021_2025_history.json
+          --forecast-assumptions examples/msft/forecast_assumptions.yaml
+          --valuation-assumptions examples/msft/valuation_assumptions.yaml
+          --business-drivers examples/msft/business_drivers.yaml
+          --business-kpi-history data/sample/msft_business_kpis_fy2023_2025.csv
+          --output "${{ runner.temp }}/msft-segment"
       - name: Run canonical Excel fallback offline
         run: >-
           python -m fmva.run

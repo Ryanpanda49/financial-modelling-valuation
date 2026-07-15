@@ -225,6 +225,144 @@ class CostMembershipRetailModel:
         return forecasts, table
 
 
+@dataclass(frozen=True, slots=True)
+class SegmentRevenueAssumptions:
+    """Opening segment values and explicit forecast drivers by segment."""
+
+    years: tuple[int, ...]
+    segments: tuple[str, ...]
+    opening_revenue: dict[str, float]
+    segment_revenue_growth: dict[str, dict[int, float]]
+    segment_cogs_as_pct_revenue: dict[str, dict[int, float]]
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> SegmentRevenueAssumptions:
+        source = Path(path)
+        try:
+            payload = yaml.safe_load(source.read_text(encoding="utf-8"))
+            if payload["model_type"] != "segment_revenue":
+                raise ConfigurationError(
+                    f"Unsupported business driver model: {payload['model_type']}"
+                )
+            years = tuple(int(year) for year in payload["forecast_years"])
+            opening_segments = payload["opening"]["segments"]
+            segments = tuple(str(segment) for segment in opening_segments)
+            result = cls(
+                years=years,
+                segments=segments,
+                opening_revenue={
+                    segment: float(opening_segments[segment]["revenue"])
+                    for segment in segments
+                },
+                segment_revenue_growth=_nested_year_series(
+                    payload["drivers"], "segment_revenue_growth", segments, years
+                ),
+                segment_cogs_as_pct_revenue=_nested_year_series(
+                    payload["drivers"], "segment_cogs_as_pct_revenue", segments, years
+                ),
+            )
+        except ConfigurationError:
+            raise
+        except (OSError, yaml.YAMLError, KeyError, TypeError, ValueError) as exc:
+            raise ConfigurationError(f"Invalid segment business driver assumptions: {source}") from exc
+        result.validate()
+        return result
+
+    def validate(self) -> None:
+        if not self.years or tuple(sorted(set(self.years))) != self.years:
+            raise ConfigurationError("Segment model forecast_years must be unique and increasing.")
+        if len(self.segments) < 2 or len(set(self.segments)) != len(self.segments):
+            raise ConfigurationError("Segment model requires at least two unique segments.")
+        for segment in self.segments:
+            if not segment.replace("_", "").isalnum() or segment.lower() != segment:
+                raise ConfigurationError("Segment keys must use lowercase letters, numbers, and underscores.")
+            if self.opening_revenue[segment] <= 0:
+                raise ConfigurationError("Opening segment revenue must be positive.")
+            growth = self.segment_revenue_growth[segment]
+            cogs = self.segment_cogs_as_pct_revenue[segment]
+            if any(value <= -1 for value in growth.values()):
+                raise ConfigurationError("Segment growth must exceed -100%.")
+            if any(not 0 <= value <= 1 for value in cogs.values()):
+                raise ConfigurationError("Segment COGS ratios must be between 0% and 100%.")
+
+
+class SegmentRevenueModel:
+    """Generic segment revenue and cost model for multi-business companies."""
+
+    def __init__(self, inputs: SegmentRevenueAssumptions) -> None:
+        self.inputs = inputs
+        self._forecasts, self._table = self._build()
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> SegmentRevenueModel:
+        return cls(SegmentRevenueAssumptions.from_yaml(path))
+
+    def forecast(
+        self,
+        prior_revenue: float,
+        year: int,
+        assumptions: ForecastAssumptions,
+    ) -> OperatingForecast:
+        if year not in self._forecasts:
+            raise ConfigurationError(f"Segment model does not cover FY{year}.")
+        if year == self.inputs.years[0]:
+            configured = sum(self.inputs.opening_revenue.values())
+            tolerance = max(1.0, abs(prior_revenue) * 0.001)
+            if abs(configured - prior_revenue) > tolerance:
+                raise ConfigurationError(
+                    "Opening segment revenue does not reconcile to historical revenue: "
+                    f"configured={configured:.2f}, historical={prior_revenue:.2f}."
+                )
+        driver = self._forecasts[year]
+        revenue = driver["total_revenue"]
+        cogs = driver["total_segment_cogs"]
+        sga = revenue * assumptions.sga_as_pct_revenue[year]
+        research_and_development = revenue * assumptions.rd_as_pct_revenue[year]
+        other_operating_income = revenue * assumptions.other_operating_income_as_pct_revenue[year]
+        gross_profit = revenue - cogs
+        return OperatingForecast(
+            revenue=revenue,
+            cogs=cogs,
+            gross_profit=gross_profit,
+            selling_general_admin=sga,
+            research_and_development=research_and_development,
+            other_operating_income=other_operating_income,
+            ebitda=gross_profit - sga - research_and_development + other_operating_income,
+            drivers=driver,
+        )
+
+    def driver_table(self) -> pd.DataFrame:
+        return self._table.copy()
+
+    def _build(self) -> tuple[dict[int, dict[str, float]], pd.DataFrame]:
+        prior_revenue = self.inputs.opening_revenue.copy()
+        forecasts: dict[int, dict[str, float]] = {}
+        for year in self.inputs.years:
+            driver: dict[str, float] = {}
+            total_revenue = 0.0
+            total_cogs = 0.0
+            for segment in self.inputs.segments:
+                growth = self.inputs.segment_revenue_growth[segment][year]
+                revenue = prior_revenue[segment] * (1.0 + growth)
+                cogs_ratio = self.inputs.segment_cogs_as_pct_revenue[segment][year]
+                cogs = revenue * cogs_ratio
+                driver[f"{segment}_revenue_growth"] = growth
+                driver[f"{segment}_revenue"] = revenue
+                driver[f"{segment}_cogs_as_pct_revenue"] = cogs_ratio
+                driver[f"{segment}_cogs"] = cogs
+                prior_revenue[segment] = revenue
+                total_revenue += revenue
+                total_cogs += cogs
+            driver["total_revenue"] = total_revenue
+            driver["total_segment_cogs"] = total_cogs
+            driver["consolidated_gross_margin"] = 1.0 - total_cogs / total_revenue
+            forecasts[year] = driver
+        table = pd.DataFrame(forecasts)
+        table.columns.name = "fiscal_year"
+        table.index.name = "business_driver"
+        return forecasts, table
+
+
 def load_business_driver_model(path: str | Path) -> BusinessDriverModel:
     """Factory reserved for additional company and industry model types."""
 
@@ -235,6 +373,8 @@ def load_business_driver_model(path: str | Path) -> BusinessDriverModel:
         raise ConfigurationError(f"Invalid business driver configuration: {path}") from exc
     if model_type == "cost_membership_retail":
         return CostMembershipRetailModel.from_yaml(path)
+    if model_type == "segment_revenue":
+        return SegmentRevenueModel.from_yaml(path)
     raise ConfigurationError(f"Unsupported business driver model: {model_type}")
 
 
@@ -249,3 +389,20 @@ def _year_series(section: dict[str, Any], key: str, years: tuple[int, ...]) -> d
     if set(result) != set(years):
         raise ConfigurationError(f"Business driver '{key}' must cover exactly {years}.")
     return result
+
+
+def _nested_year_series(
+    section: dict[str, Any],
+    key: str,
+    segments: tuple[str, ...],
+    years: tuple[int, ...],
+) -> dict[str, dict[int, float]]:
+    try:
+        raw = section[key]
+        if set(raw) != set(segments):
+            raise ConfigurationError(f"Business driver '{key}' must cover exactly {segments}.")
+        return {segment: _year_series(raw, segment, years) for segment in segments}
+    except ConfigurationError:
+        raise
+    except (KeyError, TypeError, AttributeError) as exc:
+        raise ConfigurationError(f"Invalid nested business driver: {key}") from exc

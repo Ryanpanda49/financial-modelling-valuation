@@ -42,7 +42,8 @@ Implemented:
 - Growth, profitability, liquidity, leverage, efficiency, and cash-flow ratios.
 - UFCF, WACC, both terminal-value methods, equity bridge, implied price, and sensitivity.
 - Unified `ModelResult` with Markdown, CSV-table, and six static PNG chart exporters.
-- Fourteen-sheet, blue-themed Excel workbook with formula-driven sensitivity and model checks.
+- Fourteen-sheet blue workbook, with optional Business History and Business Drivers sheets,
+  formula-driven sensitivity, and model checks.
 - Public `ValuationModel.from_sec(...)` orchestration API and `python -m fmva.run` command.
 - Live WMT mapping validation with all historical, forecast, and DCF checks passing.
 - Live AAPL compatibility validation with all historical, forecast, and DCF checks passing.
@@ -55,7 +56,9 @@ Implemented:
 - Named scenario-set orchestration that reuses one history dataset across base, upside, and
   downside assumption files.
 - Optional company-specific business-driver models feeding the same linked statements and DCF;
-  COST includes the first warehouse, comparable-sales, and membership implementation.
+  COST includes warehouse/membership logic and MSFT includes a sourced segment model.
+- Source-aware historical business KPI imports with direct/recast flags, evidence URLs, duplicate
+  protection, and consolidated statement tie-outs.
 - Valuation-bridge readiness and debt/interest consistency diagnostics before DCF construction.
 - Historical and forecast ratios displayed together with continuous blue trend charts.
 - Offline unit and integration tests.

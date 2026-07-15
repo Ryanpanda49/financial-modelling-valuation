@@ -1,0 +1,23 @@
+# Illustrative segment forecasts anchored to the recast FY2025 segment table in Microsoft's 10-K.
+# Growth and future cost ratios are researcher inputs, not company guidance.
+model_type: segment_revenue
+forecast_years: [2026, 2027, 2028, 2029, 2030]
+
+opening:
+  segments:
+    productivity_and_business_processes:
+      revenue: 120810.0
+    intelligent_cloud:
+      revenue: 106265.0
+    more_personal_computing:
+      revenue: 54649.0
+
+drivers:
+  segment_revenue_growth:
+    productivity_and_business_processes: {2026: 0.130, 2027: 0.120, 2028: 0.110, 2029: 0.100, 2030: 0.090}
+    intelligent_cloud: {2026: 0.210, 2027: 0.180, 2028: 0.160, 2029: 0.140, 2030: 0.120}
+    more_personal_computing: {2026: 0.070, 2027: 0.060, 2028: 0.050, 2029: 0.040, 2030: 0.040}
+  segment_cogs_as_pct_revenue:
+    productivity_and_business_processes: {2026: 0.188, 2027: 0.190, 2028: 0.192, 2029: 0.194, 2030: 0.195}
+    intelligent_cloud: {2026: 0.390, 2027: 0.395, 2028: 0.395, 2029: 0.392, 2030: 0.388}
+    more_personal_computing: {2026: 0.455, 2027: 0.450, 2028: 0.445, 2029: 0.440, 2030: 0.438}
